@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>NoteNest</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <!-- ===========================
+             APP TITLE
+        ============================ -->
+
+        <h1 class="title">
+            Note<span>Nest</span>
+        </h1>
+
+
+        <!-- ===========================
+             TAGLINE
+        ============================ -->
+
+        <p class="tagline">
+            ✨ Your ideas, beautifully organized ✨
+        </p>
+
+
+        <!-- ===========================
+             HERO IMAGE
+        ============================ -->
+
+        <div class="hero">
+
+            <img
+                src="assets/hero.png"
+                alt="NoteNest">
+
+        </div>
+
+
+        <!-- ===========================
+             CONTENT
+        ============================ -->
+
+        <div class="content">
+
+            <h2>
+                Welcome to <span>NoteNest</span>
+            </h2>
+
+            <p>
+                A smart and beautiful notes app to
+                capture, organize and achieve more
+                every day.
+            </p>
+
+        </div>
+
+
+        <!-- ===========================
+             DOTS
+        ============================ -->
+
+        <div class="dots">
+
+            <span class="active"></span>
+
+            <span></span>
+
+            <span></span>
+
+        </div>
+
+
+        <!-- ===========================
+             BUTTONS
+        ============================ -->
+
+        <div class="buttons">
+
+
+            <!-- GET STARTED -->
+
+            <a
+                href="getstarted.html"
+                class="start-btn">
+
+                Get Started
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+            </a>
+
+
+            <!-- LOGIN -->
+
+            <a
+                href="login.html"
+                class="login-btn">
+
+                Login
+
+            </a>
+
+
+        </div>
+
+
+        <!-- ===========================
+             FOOTER
+        ============================ -->
+
+        <div class="footer">
+
+            <p>
+
+                Your notes are safe and secure with us
+
+                <i class="fa-solid fa-shield-heart"></i>
+
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ===========================
+         JAVASCRIPT
+    ============================ -->
+
+    <script>
+
+        // Auto change dots
+
+        const dots =
+            document.querySelectorAll(".dots span");
+
+        let current = 0;
+
+
+        setInterval(() => {
+
+            dots[current]
+                .classList
+                .remove("active");
+
+            current =
+                (current + 1) % dots.length;
+
+            dots[current]
+                .classList
+                .add("active");
+
+        }, 2000);
+
+
+    </script>
+
+
+</body>
+
+</html>
+

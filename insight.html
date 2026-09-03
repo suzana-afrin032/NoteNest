@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Insight - NoteNest</title>
+
+    <link rel="stylesheet" href="insight.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- ================================
+             HEADER
+        ================================= -->
+
+        <div class="page-header">
+
+            <div>
+                <h1>Your Insight</h1>
+                <p>Understand your note-taking habits.</p>
+            </div>
+
+            <button
+                id="backBtn"
+                class="back-btn"
+                type="button"
+            >
+                ←
+            </button>
+
+        </div>
+
+
+        <!-- ================================
+             OVERVIEW
+        ================================= -->
+
+        <div class="section-title">
+            Overview
+        </div>
+
+        <div class="stats-grid">
+
+            <!-- Total Notes -->
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Notes
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalNotes"
+                >
+                    0
+                </div>
+
+                <div class="stat-small">
+                    Notes in your collection
+                </div>
+
+            </div>
+
+
+            <!-- Today's Notes -->
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Today
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="todayNotes"
+                >
+                    0
+                </div>
+
+                <div class="stat-small">
+                    Notes created today
+                </div>
+
+            </div>
+
+
+            <!-- Most Used Category -->
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Top Category
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="mostUsedCategory"
+                >
+                    None
+                </div>
+
+                <div class="stat-small">
+                    Most used category
+                </div>
+
+            </div>
+
+
+            <!-- Writing Streak -->
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Writing Streak
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="writingStreak"
+                >
+                    0
+                </div>
+
+                <div class="stat-small">
+                    Consecutive days
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================
+             SMART INSIGHT
+        ================================= -->
+
+        <div class="section-title">
+            Smart Insight
+        </div>
+
+        <div class="insight-card">
+
+            <div class="insight-header">
+
+                <div class="insight-title">
+                    Your NoteNest Activity
+                </div>
+
+            </div>
+
+            <div
+                class="insight-text"
+                id="insightText"
+            >
+                Loading your insights...
+            </div>
+
+        </div>
+
+
+        <!-- ================================
+             WEEKLY ACTIVITY
+        ================================= -->
+
+        <div class="section-title">
+            Weekly Activity
+        </div>
+
+        <div class="activity-card">
+
+            <div
+                class="activity-list"
+                id="activityList"
+            >
+
+                <div class="loading">
+                    Loading activity...
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================
+             CATEGORY BREAKDOWN
+        ================================= -->
+
+        <div class="section-title">
+            Category Breakdown
+        </div>
+
+        <div class="category-card">
+
+            <div
+                class="category-list"
+                id="categoryList"
+            >
+
+                <div class="loading">
+                    Loading categories...
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    
+
+    <!-- ================================
+         JAVASCRIPT
+    ================================= -->
+
+    <script src="insight.js"></script>
+
+</body>
+</html>

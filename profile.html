@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Profile - NoteNest</title>
+
+    <link rel="stylesheet" href="profile.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Header -->
+        <div class="page-header">
+
+            <button id="backBtn" class="back-btn" type="button">
+                ←
+            </button>
+
+            <div>
+                <h1>Profile</h1>
+                <p>Manage your account and preferences.</p>
+            </div>
+
+        </div>
+
+
+        <!-- Profile Card -->
+        <div class="profile-card">
+
+            <div class="profile-avatar" id="profileAvatar">
+                U
+            </div>
+
+            <h2 id="profileName">User</h2>
+
+            <p id="profileEmail">user@email.com</p>
+
+        </div>
+
+
+        <!-- Account Information -->
+        <div class="section-title">
+            Account Information
+        </div>
+
+        <div class="info-card">
+
+            <div class="info-row">
+                <div class="info-label">
+                    Name
+                </div>
+
+                <div class="info-value" id="nameValue">
+                    -
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    Email
+                </div>
+
+                <div class="info-value" id="emailValue">
+                    -
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Daily Reminder -->
+        <div class="section-title">
+            Daily Reminder
+        </div>
+
+        <div class="settings-card">
+
+            <div class="setting-row">
+
+                <div class="setting-content">
+                    <h3>Daily Note Reminder</h3>
+
+                    <p id="reminderStatus">
+                        Get reminded to write a note every day.
+                    </p>
+                </div>
+
+                <label class="switch">
+                    <input
+                        type="checkbox"
+                        id="reminderToggle"
+                    >
+
+                    <span class="slider"></span>
+                </label>
+
+            </div>
+
+
+            <div
+                class="reminder-time-section"
+                id="reminderTimeSection"
+            >
+
+                <label for="reminderTime">
+                    Reminder Time
+                </label>
+
+                <input
+                    type="time"
+                    id="reminderTime"
+                    value="20:00"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- App Information -->
+        <div class="section-title">
+            App Information
+        </div>
+
+        <div class="info-card app-info">
+
+            <div class="info-row">
+                <div class="info-label">
+                    App Name
+                </div>
+
+                <div class="info-value">
+                    NoteNest
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    Version
+                </div>
+
+                <div class="info-value">
+                    1.0.0
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    Description
+                </div>
+
+                <div class="info-value description">
+                    A simple and organized place to create,
+                    manage and explore your notes.
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Logout -->
+        <button
+            id="logoutBtn"
+            class="logout-btn"
+            type="button"
+        >
+            Logout
+        </button>
+
+
+        <!-- In-page Notification -->
+        <div
+            id="notification"
+            class="notification"
+        >
+            <span id="notificationText"></span>
+
+            <button
+                id="notificationClose"
+                type="button"
+            >
+                ×
+            </button>
+        </div>
+
+    </div>
+
+
+
+    <script src="profile.js"></script>
+
+</body>
+</html>
+

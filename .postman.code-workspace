@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+			"path": ".postman"
+		},
+		{
+			"path": "assets"
+		},
+		{
+			"path": "backend"
+		},
+		{
+			"path": "node_modules"
+		},
+		{
+			"path": "postman"
+		},
+		{
+			"path": "server"
+		},
+		{
+			"path": "server/middleware"
+		},
+		{
+			"path": "server/models"
+		},
+		{
+			"path": "server/node_modules"
+		}
+	],
+	"settings": {}
+}

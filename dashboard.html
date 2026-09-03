@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - NoteNest</title>
+
+    <!-- Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="dashboard.css">
+
+</head>
+
+
+<body>
+
+
+    <div class="dashboard">
+
+
+        <!-- =========================
+             HEADER
+        ========================== -->
+
+        <header class="top-header">
+
+            <div class="welcome">
+
+                <p>Good Morning 👋</p>
+
+                <h1>
+                    Welcome, <span id="userName">User</span>
+                </h1>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             SEARCH
+        ========================== -->
+
+        <div class="search-box">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search your notes...">
+
+        </div>
+
+
+        <!-- =========================
+             CATEGORIES
+        ========================== -->
+
+       <section class="categories">
+
+
+       <div class="section-header">
+          <h2>Categories</h2>
+
+          <button id="addCategoryBtn" class="add-category-btn">
+            <i class="fa-solid fa-plus"></i>
+            Add
+          </button>
+       </div>
+
+       <div class="category-list" id="categoryList">
+       <!-- Categories will be added by JavaScript -->
+       </div>
+
+
+       </section>
+
+<!-- Add Category Modal -->
+<div id="categoryModal" class="modal-overlay">
+    <div class="category-modal">
+
+        <button id="closeCategoryModal" class="modal-close">
+            &times;
+        </button>
+
+        <div class="modal-icon">📁</div>
+
+        <h2>Add Category</h2>
+        <p>Create a new category for your notes</p>
+
+        <input
+            type="text"
+            id="categoryNameInput"
+            placeholder="Enter category name"
+            autocomplete="off"
+        >
+
+        <div class="modal-actions">
+            <button id="cancelCategoryBtn" class="cancel-btn">
+                Cancel
+            </button>
+
+            <button id="saveCategoryBtn" class="save-category-btn">
+                Add Category
+            </button>
+        </div>
+
+    </div>
+</div>
+            
+
+        <!-- =========================
+             RECENT NOTES
+        ========================== -->
+
+        <section class="notes-section">
+
+
+            <div class="section-header">
+
+                <h2>Recent Notes</h2>
+
+                <button id="seeAllBtn">
+                    See all
+                </button>
+
+            </div>
+
+
+            <!-- NOTES CONTAINER -->
+
+            <div id="notesContainer">
+            </div>
+
+
+            <!-- Empty Search Message -->
+
+            <div
+                id="emptyMessage"
+                class="empty-message">
+
+                <i class="fa-regular fa-face-sad-tear"></i>
+
+                <p>
+                    No notes found
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =========================
+             FLOATING ADD BUTTON
+        ========================== -->
+
+        <button
+            class="add-note-btn"
+            id="addNoteBtn">
+
+            <i class="fa-solid fa-plus"></i>
+
+        </button>
+
+
+        <!-- =========================
+             BOTTOM NAVIGATION
+        ========================== -->
+<div class="bottom-nav">
+    <a href="dashboard.html" class="nav-item active">
+        <span>Home</span>
+    </a>
+
+    <a href="insight.html" class="nav-item">
+        <span>Insight</span>
+    </a>
+
+    <a href="profile.html" class="nav-item">
+        <span>Profile</span>
+    </a>
+</div>
+    <!-- JavaScript -->
+
+    <script src="dashboard.js"></script>
+
+</body>
+
+</html>

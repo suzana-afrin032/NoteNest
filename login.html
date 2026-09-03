@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - NoteNest</title>
+
+    <link rel="stylesheet" href="login.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body>
+
+    <div class="login-container">
+
+        <!-- BACKGROUND CIRCLE -->
+        <div class="background-circle"></div>
+
+
+        <!-- LOGO -->
+        <div class="logo">
+            Note<span>Nest</span>
+        </div>
+
+
+        <!-- CONTENT -->
+        <div class="login-content">
+
+            <div class="login-icon">
+                🔐
+            </div>
+
+            <h1>Welcome Back!</h1>
+
+            <p class="subtitle">
+                Login to continue organizing your notes with NoteNest.
+            </p>
+
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm">
+
+                <!-- EMAIL -->
+                <div class="input-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- PASSWORD -->
+                <div class="input-group">
+
+                    <div class="password-label">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <a href="forgot-password.html">
+                            Forgot Password?
+                        </a>
+
+                    </div>
+
+
+                    <div class="password-box">
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter your password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            id="togglePassword"
+                            class="eye-btn"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ERROR MESSAGE -->
+                <p
+                    id="errorMessage"
+                    class="error-message"
+                ></p>
+
+
+                <!-- LOGIN BUTTON -->
+                <button
+                    type="submit"
+                    class="login-btn"
+                    id="loginBtn"
+                >
+                    Login
+                </button>
+
+            </form>
+
+
+            <!-- SIGN UP -->
+            <p class="signup-text">
+
+                Don't have an account?
+
+                <a href="signup.html">
+                    Sign Up
+                </a>
+
+            </p>
+
+        </div>
+
+
+        <!-- FOOTER -->
+        <div class="footer">
+
+            <p>
+                <i>♥</i>
+                Your ideas, your space.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <script src="login.js"></script>
+
+</body>
+
+</html>
+

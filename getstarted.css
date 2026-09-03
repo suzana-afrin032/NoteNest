@@ -1,0 +1,676 @@
+/* ===========================
+   RESET
+=========================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+
+/* ===========================
+   BODY
+=========================== */
+
+body {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(
+        180deg,
+        #ffffff,
+        #fff4f8
+    );
+
+    padding: 20px;
+
+    overflow-x: hidden;
+}
+
+
+/* ===========================
+   CONTAINER
+=========================== */
+
+.container {
+    width: 100%;
+    max-width: 390px;
+
+    min-height: 100vh;
+
+    background: #ffffff;
+
+    padding: 22px;
+
+    display: flex;
+    flex-direction: column;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+/* ===========================
+   BACK BUTTON
+=========================== */
+
+.back-btn {
+    width: 42px;
+    height: 42px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #fff0f5;
+
+    color: #ff6fa5;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    transition: 0.3s ease;
+
+    flex-shrink: 0;
+}
+
+.back-btn:hover {
+    transform: translateX(-3px);
+}
+
+
+/* ===========================
+   HEADER
+=========================== */
+
+.header {
+    width: 100%;
+
+    text-align: center;
+
+    margin-top: 25px;
+}
+
+.header h1 {
+    font-size: 27px;
+
+    color: #222;
+
+    font-weight: 700;
+
+    line-height: 1.3;
+}
+
+.header h1::first-letter {
+    color: #ff6fa5;
+}
+
+.header p {
+    margin-top: 8px;
+
+    font-size: 13px;
+
+    line-height: 20px;
+
+    color: #777;
+
+    padding: 0 15px;
+}
+
+
+/* ===========================
+   ILLUSTRATION
+=========================== */
+
+.illustration {
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin: 25px 0;
+}
+
+.icon-circle {
+    width: 115px;
+    height: 115px;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        135deg,
+        #ffd8e7,
+        #fff0f6
+    );
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    box-shadow:
+        0 15px 30px rgba(255, 111, 165, 0.15);
+
+    flex-shrink: 0;
+}
+
+.icon-circle i {
+    font-size: 48px;
+
+    color: #ff6fa5;
+}
+
+
+/* ===========================
+   FEATURES
+=========================== */
+
+.feature {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 14px;
+
+    margin-bottom: 10px;
+
+    border-radius: 18px;
+
+    background: #fff8fb;
+
+    transition: 0.3s ease;
+}
+
+.feature:hover {
+    transform: translateY(-2px);
+}
+
+
+/* ===========================
+   FEATURE ICON
+=========================== */
+
+.feature-icon {
+    width: 45px;
+    min-width: 45px;
+    height: 45px;
+
+    border-radius: 14px;
+
+    background: #ffe2ed;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-shrink: 0;
+}
+
+.feature-icon i {
+    color: #ff6fa5;
+
+    font-size: 18px;
+}
+
+
+/* ===========================
+   FEATURE TEXT
+=========================== */
+
+.feature-text {
+    min-width: 0;
+
+    flex: 1;
+}
+
+.feature-text h3 {
+    font-size: 15px;
+
+    color: #333;
+
+    margin-bottom: 3px;
+
+    line-height: 1.3;
+}
+
+.feature-text p {
+    font-size: 11px;
+
+    color: #888;
+
+    line-height: 16px;
+
+    word-wrap: break-word;
+}
+
+
+/* ===========================
+   DOTS
+=========================== */
+
+.dots {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 8px;
+
+    margin: 15px 0;
+}
+
+.dots span {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #f8c6d8;
+
+    transition: 0.3s ease;
+}
+
+.dots span.active {
+    width: 27px;
+
+    border-radius: 20px;
+
+    background: #ff6fa5;
+}
+
+
+/* ===========================
+   CONTINUE BUTTON
+=========================== */
+
+.continue-btn {
+    width: 100%;
+
+    min-height: 52px;
+
+    border: none;
+
+    border-radius: 40px;
+
+    background: linear-gradient(
+        90deg,
+        #ff6fa5,
+        #ff8fb9
+    );
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 10px;
+
+    box-shadow:
+        0 10px 20px rgba(255, 111, 165, 0.25);
+
+    transition: 0.3s ease;
+
+    text-decoration: none;
+}
+
+.continue-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 13px 25px rgba(255, 111, 165, 0.30);
+}
+
+.continue-btn:active {
+    transform: scale(0.97);
+}
+
+
+/* ===========================
+   BOTTOM TEXT
+=========================== */
+
+.bottom-text {
+    text-align: center;
+
+    font-size: 10px;
+
+    color: #999;
+
+    margin-top: 12px;
+
+    line-height: 16px;
+}
+
+
+/* ===========================
+   TABLET
+=========================== */
+
+@media (max-width: 768px) {
+
+    body {
+        padding: 15px;
+    }
+
+    .container {
+        max-width: 430px;
+
+        border-radius: 25px;
+
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+}
+
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media (max-width: 480px) {
+
+    body {
+        min-height: 100svh;
+
+        padding: 0;
+
+        background: #ffffff;
+
+        align-items: stretch;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+
+        min-height: 100svh;
+
+        padding: 20px;
+
+        border-radius: 0;
+
+        box-shadow: none;
+    }
+
+    .back-btn {
+        width: 42px;
+        height: 42px;
+
+        font-size: 16px;
+    }
+
+    .header {
+        margin-top: 22px;
+    }
+
+    .header h1 {
+        font-size: 26px;
+    }
+
+    .header p {
+        font-size: 12px;
+
+        line-height: 19px;
+
+        padding: 0 8px;
+    }
+
+    .illustration {
+        margin: 22px 0;
+    }
+
+    .icon-circle {
+        width: 105px;
+        height: 105px;
+    }
+
+    .icon-circle i {
+        font-size: 44px;
+    }
+
+    .feature {
+        gap: 12px;
+
+        padding: 13px;
+
+        margin-bottom: 10px;
+
+        border-radius: 18px;
+    }
+
+    .feature-icon {
+        width: 45px;
+        min-width: 45px;
+        height: 45px;
+    }
+
+    .feature-icon i {
+        font-size: 18px;
+    }
+
+    .feature-text h3 {
+        font-size: 14px;
+    }
+
+    .feature-text p {
+        font-size: 10.5px;
+
+        line-height: 15px;
+    }
+
+    .dots {
+        margin: 13px 0;
+    }
+
+    .continue-btn {
+        width: 100%;
+
+        min-height: 52px;
+
+        font-size: 15px;
+    }
+
+    .bottom-text {
+        font-size: 9px;
+
+        margin-top: 10px;
+    }
+}
+
+
+/* ===========================
+   SMALL MOBILE
+=========================== */
+
+@media (max-width: 360px) {
+
+    .container {
+        padding: 17px;
+    }
+
+    .back-btn {
+        width: 40px;
+        height: 40px;
+
+        font-size: 15px;
+    }
+
+    .header {
+        margin-top: 18px;
+    }
+
+    .header h1 {
+        font-size: 23px;
+    }
+
+    .header p {
+        font-size: 11px;
+
+        line-height: 17px;
+    }
+
+    .illustration {
+        margin: 18px 0;
+    }
+
+    .icon-circle {
+        width: 95px;
+        height: 95px;
+    }
+
+    .icon-circle i {
+        font-size: 40px;
+    }
+
+    .feature {
+        gap: 10px;
+
+        padding: 11px;
+
+        margin-bottom: 8px;
+    }
+
+    .feature-icon {
+        width: 42px;
+        min-width: 42px;
+        height: 42px;
+
+        border-radius: 13px;
+    }
+
+    .feature-icon i {
+        font-size: 17px;
+    }
+
+    .feature-text h3 {
+        font-size: 13px;
+    }
+
+    .feature-text p {
+        font-size: 10px;
+
+        line-height: 14px;
+    }
+
+    .dots {
+        margin: 10px 0;
+    }
+
+    .continue-btn {
+        min-height: 49px;
+
+        font-size: 14px;
+    }
+
+    .bottom-text {
+        font-size: 8px;
+    }
+}
+
+
+/* ===========================
+   EXTRA SMALL MOBILE
+=========================== */
+
+@media (max-width: 320px) {
+
+    .container {
+        padding: 15px;
+    }
+
+    .header h1 {
+        font-size: 21px;
+    }
+
+    .header p {
+        font-size: 10px;
+
+        line-height: 16px;
+    }
+
+    .illustration {
+        margin: 15px 0;
+    }
+
+    .icon-circle {
+        width: 88px;
+        height: 88px;
+    }
+
+    .icon-circle i {
+        font-size: 36px;
+    }
+
+    .feature {
+        padding: 9px;
+
+        gap: 9px;
+    }
+
+    .feature-icon {
+        width: 39px;
+        min-width: 39px;
+        height: 39px;
+    }
+
+    .feature-icon i {
+        font-size: 15px;
+    }
+
+    .feature-text h3 {
+        font-size: 12px;
+    }
+
+    .feature-text p {
+        font-size: 9px;
+
+        line-height: 13px;
+    }
+
+    .continue-btn {
+        min-height: 46px;
+
+        font-size: 13px;
+    }
+
+    .bottom-text {
+        font-size: 8px;
+    }
+}
+
+
+/* ===========================
+   TOUCH DEVICES
+=========================== */
+
+@media (hover: none) {
+
+    .feature:hover {
+        transform: none;
+    }
+
+    .continue-btn:hover {
+        transform: none;
+    }
+
+    .back-btn:hover {
+        transform: none;
+    }
+}
+

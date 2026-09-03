@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Note - NoteNest</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    >
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #ffffff, #fff4f8);
+            color: #222;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 52%;
+            min-width: 350px;
+            max-width: 650px;
+            min-height: calc(100vh - 40px);
+            background: #ffffff;
+            border-radius: 30px;
+            padding: 25px 22px 40px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ================= HEADER ================= */
+
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            background: #fff0f5;
+            color: #ff6fa5;
+            font-size: 17px;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .back-btn:hover {
+            background: #ff6fa5;
+            color: #ffffff;
+            transform: translateX(-2px);
+        }
+
+        .header-title {
+            font-size: 21px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .header-spacer {
+            width: 44px;
+        }
+
+        /* ================= NOTE ================= */
+
+        .note-card {
+            background: #fff7fa;
+            border: 1px solid #ffe1eb;
+            border-radius: 24px;
+            padding: 25px 22px;
+            box-shadow: 0 8px 25px rgba(255, 111, 165, 0.08);
+        }
+
+        /* ================= ICON ================= */
+
+        .note-icon-wrapper {
+            width: 58px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffe8f0;
+            color: #ff6fa5;
+            border-radius: 18px;
+            font-size: 23px;
+            margin-bottom: 18px;
+        }
+
+        /* ================= TITLE ================= */
+
+        .note-title {
+            font-size: 27px;
+            font-weight: 600;
+            color: #222;
+            line-height: 1.35;
+            margin-bottom: 12px;
+            word-break: break-word;
+        }
+
+        /* ================= EDIT INPUT ================= */
+
+        .edit-input,
+        .edit-textarea,
+        .edit-select {
+            width: 100%;
+            border: 1px solid #ffd5e3;
+            background: #ffffff;
+            border-radius: 14px;
+            outline: none;
+            color: #333;
+            font-family: "Poppins", sans-serif;
+            transition: 0.25s;
+        }
+
+        .edit-input {
+            padding: 13px 15px;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .edit-textarea {
+            min-height: 260px;
+            padding: 14px 15px;
+            font-size: 14px;
+            line-height: 1.8;
+            resize: vertical;
+        }
+
+        .edit-select {
+            padding: 10px 13px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .edit-input:focus,
+        .edit-textarea:focus,
+        .edit-select:focus {
+            border-color: #ff8eb7;
+            box-shadow: 0 0 0 3px rgba(255, 111, 165, 0.10);
+        }
+
+        /* ================= META ================= */
+
+        .note-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 13px;
+            border-radius: 20px;
+            background: #ffe8f0;
+            color: #ff5f98;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .date-text {
+            color: #999;
+            font-size: 12px;
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .note-content {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* ================= SAVE BUTTON ================= */
+
+        .save-btn {
+            width: 100%;
+            border: none;
+            background: #ff6fa5;
+            color: #ffffff;
+            padding: 13px 18px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 22px;
+            transition: 0.25s;
+        }
+
+        .save-btn:hover {
+            background: #ff5b98;
+            transform: translateY(-1px);
+        }
+
+        .save-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ================= LOADING ================= */
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .loading i {
+            display: block;
+            color: #ff6fa5;
+            font-size: 25px;
+            margin-bottom: 12px;
+        }
+
+        /* ================= ERROR ================= */
+
+        .error-message {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .error-message i {
+            display: block;
+            color: #ff6fa5;
+            font-size: 35px;
+            margin-bottom: 15px;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 600px) {
+            body {
+                padding: 0;
+                background: #ffffff;
+                display: block;
+            }
+
+            .container {
+                width: 100%;
+                min-width: 0;
+                max-width: none;
+                min-height: 100vh;
+                border-radius: 0;
+                box-shadow: none;
+                padding: 22px 18px 35px;
+            }
+
+            .header-title {
+                font-size: 19px;
+            }
+
+            .note-card {
+                padding: 22px 18px;
+                border-radius: 22px;
+            }
+
+            .note-title {
+                font-size: 23px;
+            }
+
+            .edit-input {
+                font-size: 18px;
+            }
+
+            .note-content {
+                font-size: 13px;
+                line-height: 1.8;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- ================= HEADER ================= -->
+
+        <header class="top-header">
+
+            <button
+                class="back-btn"
+                id="backBtn"
+                type="button"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+            <h1
+                class="header-title"
+                id="headerTitle"
+            >
+                View Note
+            </h1>
+
+            <div class="header-spacer"></div>
+
+        </header>
+
+
+        <!-- ================= LOADING ================= -->
+
+        <div
+            class="loading"
+            id="loading"
+        >
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <p>Loading note...</p>
+        </div>
+
+
+        <!-- ================= ERROR ================= -->
+
+        <div
+            class="error-message"
+            id="errorMessage"
+        >
+            <i class="fa-regular fa-face-sad-tear"></i>
+            <p>Unable to load this note.</p>
+        </div>
+
+
+        <!-- ================= NOTE CARD ================= -->
+
+        <div
+            class="note-card"
+            id="noteCard"
+            style="display: none;"
+        >
+
+            <div class="note-icon-wrapper">
+                <i class="fa-regular fa-note-sticky"></i>
+            </div>
+
+
+            <!-- ================= TITLE ================= -->
+
+            <h2
+                class="note-title"
+                id="noteTitle"
+            >
+                Note Title
+            </h2>
+
+
+            <!-- ================= META ================= -->
+
+            <div class="note-meta">
+
+                <span
+                    class="category-badge"
+                    id="noteCategory"
+                >
+                    Study
+                </span>
+
+                <span
+                    class="date-text"
+                    id="noteDate"
+                >
+                    Recently created
+                </span>
+
+            </div>
+
+
+            <!-- ================= CONTENT ================= -->
+
+            <h3 class="content-title">
+                Note Content
+            </h3>
+
+            <div
+                class="note-content"
+                id="noteContent"
+            >
+                Note content will appear here.
+            </div>
+
+
+            <!-- ================= SAVE BUTTON ================= -->
+
+            <button
+                class="save-btn"
+                id="saveBtn"
+                type="button"
+                style="display: none;"
+            >
+                <i class="fa-solid fa-check"></i>
+                Save Changes
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* ================= AUTHENTICATION ================= */
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            alert("Please login first.");
+            window.location.href = "login.html";
+        }
+
+
+        /* ================= URL DATA ================= */
+
+        const urlParams = new URLSearchParams(
+            window.location.search
+        );
+
+        const noteId = urlParams.get("id");
+
+        const editMode =
+            urlParams.get("edit") === "true";
+
+
+        if (!noteId) {
+            alert("Note ID not found.");
+            window.location.href = "dashboard.html";
+        }
+
+
+        /* ================= ELEMENTS ================= */
+
+        const loading =
+            document.getElementById("loading");
+
+        const errorMessage =
+            document.getElementById("errorMessage");
+
+        const noteCard =
+            document.getElementById("noteCard");
+
+        const noteTitle =
+            document.getElementById("noteTitle");
+
+        const noteCategory =
+            document.getElementById("noteCategory");
+
+        const noteDate =
+            document.getElementById("noteDate");
+
+        const noteContent =
+            document.getElementById("noteContent");
+
+        const backBtn =
+            document.getElementById("backBtn");
+
+        const saveBtn =
+            document.getElementById("saveBtn");
+
+        const headerTitle =
+            document.getElementById("headerTitle");
+
+
+        /* ================= CURRENT NOTE ================= */
+
+        let currentNote = null;
+
+
+        /* ================= LOAD NOTE ================= */
+
+        async function loadNote() {
+
+            try {
+
+                const response = await fetch(
+                    `http://localhost:5000/api/notes/${noteId}`,
+                    {
+                        method: "GET",
+
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    }
+                );
+
+
+                /* ================= AUTH ERROR ================= */
+
+                if (response.status === 401) {
+
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+
+                    alert(
+                        "Session expired. Please login again."
+                    );
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+                }
+
+
+                if (!response.ok) {
+                    throw new Error(
+                        "Failed to load note"
+                    );
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                const note =
+                    data.note || data;
+
+
+                if (!note) {
+                    throw new Error(
+                        "Note not found"
+                    );
+                }
+
+
+                currentNote = note;
+
+
+                /* ================= DISPLAY ================= */
+
+                noteTitle.textContent =
+                    note.title ||
+                    "Untitled Note";
+
+
+                noteCategory.textContent =
+                    note.category ||
+                    "Study";
+
+
+                noteContent.textContent =
+                    note.content ||
+                    note.description ||
+                    "No content available.";
+
+
+                /* ================= DATE ================= */
+
+                if (note.createdAt) {
+
+                    const date =
+                        new Date(note.createdAt);
+
+                    noteDate.textContent =
+                        date.toLocaleDateString(
+                            "en-US",
+                            {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric"
+                            }
+                        );
+
+                } else {
+
+                    noteDate.textContent =
+                        "Recently created";
+                }
+
+
+                /* ================= SHOW ================= */
+
+                loading.style.display =
+                    "none";
+
+                noteCard.style.display =
+                    "block";
+
+
+                /* ================= EDIT MODE ================= */
+
+                if (editMode) {
+                    enableEditMode();
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Error loading note:",
+                    error
+                );
+
+                loading.style.display =
+                    "none";
+
+                errorMessage.style.display =
+                    "block";
+            }
+        }
+
+
+        /* ================= ENABLE EDIT MODE ================= */
+
+        function enableEditMode() {
+
+            headerTitle.textContent =
+                "Edit Note";
+
+
+            /* ================= TITLE INPUT ================= */
+
+            const titleInput =
+                document.createElement("input");
+
+            titleInput.type = "text";
+            titleInput.className = "edit-input";
+            titleInput.id = "editTitle";
+            titleInput.value =
+                currentNote.title || "";
+
+
+            noteTitle.replaceWith(titleInput);
+
+
+            /* ================= CATEGORY SELECT ================= */
+
+            const categorySelect =
+                document.createElement("select");
+
+            categorySelect.className =
+                "edit-select";
+
+            categorySelect.id =
+                "editCategory";
+
+
+            const categories = [
+                "Study",
+                "Ideas",
+                "Personal"
+            ];
+
+
+            categories.forEach(
+                function (category) {
+
+                    const option =
+                        document.createElement("option");
+
+                    option.value =
+                        category;
+
+                    option.textContent =
+                        category;
+
+                    if (
+                        (
+                            currentNote.category ||
+                            "Study"
+                        ).toLowerCase() ===
+                        category.toLowerCase()
+                    ) {
+                        option.selected = true;
+                    }
+
+                    categorySelect.appendChild(
+                        option
+                    );
+                }
+            );
+
+
+            noteCategory.replaceWith(
+                categorySelect
+            );
+
+
+            /* ================= CONTENT TEXTAREA ================= */
+
+            const contentTextarea =
+                document.createElement("textarea");
+
+            contentTextarea.className =
+                "edit-textarea";
+
+            contentTextarea.id =
+                "editContent";
+
+            contentTextarea.value =
+                currentNote.content ||
+                currentNote.description ||
+                "";
+
+
+            noteContent.replaceWith(
+                contentTextarea
+            );
+
+
+            /* ================= SAVE BUTTON ================= */
+
+            saveBtn.style.display =
+                "block";
+        }
+
+
+        /* ================= SAVE CHANGES ================= */
+
+        saveBtn.addEventListener(
+            "click",
+            async function () {
+
+                const titleInput =
+                    document.getElementById("editTitle");
+
+                const categorySelect =
+                    document.getElementById("editCategory");
+
+                const contentTextarea =
+                    document.getElementById("editContent");
+
+
+                const updatedTitle =
+                    titleInput.value.trim();
+
+                const updatedCategory =
+                    categorySelect.value;
+
+                const updatedContent =
+                    contentTextarea.value.trim();
+
+
+                /* ================= VALIDATION ================= */
+
+                if (!updatedTitle) {
+
+                    alert(
+                        "Please enter a note title."
+                    );
+
+                    titleInput.focus();
+
+                    return;
+                }
+
+
+                if (!updatedContent) {
+
+                    alert(
+                        "Please enter note content."
+                    );
+
+                    contentTextarea.focus();
+
+                    return;
+                }
+
+
+                /* ================= BUTTON ================= */
+
+                saveBtn.disabled = true;
+
+                saveBtn.innerHTML =
+                    '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `http://localhost:5000/api/notes/${noteId}`,
+                            {
+                                method: "PUT",
+
+                                headers: {
+                                    "Authorization":
+                                        `Bearer ${token}`,
+
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body: JSON.stringify({
+                                    title: updatedTitle,
+                                    content: updatedContent,
+                                    category: updatedCategory
+                                })
+                            }
+                        );
+
+
+                    /* ================= AUTH ERROR ================= */
+
+                    if (response.status === 401) {
+
+                        localStorage.removeItem(
+                            "token"
+                        );
+
+                        localStorage.removeItem(
+                            "user"
+                        );
+
+                        alert(
+                            "Session expired. Please login again."
+                        );
+
+                        window.location.href =
+                            "login.html";
+
+                        return;
+                    }
+
+
+                    if (!response.ok) {
+
+                        const errorData =
+                            await response.json()
+                                .catch(
+                                    () => ({})
+                                );
+
+                        throw new Error(
+                            errorData.message ||
+                            "Failed to update note"
+                        );
+                    }
+
+
+                    /* ================= SUCCESS ================= */
+
+                    alert(
+                        "Note updated successfully! ✅"
+                    );
+
+                    window.location.href =
+                        "dashboard.html";
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Update error:",
+                        error
+                    );
+
+                    alert(
+                        error.message ||
+                        "Failed to update note."
+                    );
+
+                    saveBtn.disabled =
+                        false;
+
+                    saveBtn.innerHTML =
+                        '<i class="fa-solid fa-check"></i> Save Changes';
+                }
+
+            }
+        );
+
+
+        /* ================= BACK ================= */
+
+        backBtn.addEventListener(
+            "click",
+            function () {
+
+                window.location.href =
+                    "dashboard.html";
+
+            }
+        );
+
+
+        /* ================= INITIALIZE ================= */
+
+        loadNote();
+
+    </script>
+
+</body>
+</html>

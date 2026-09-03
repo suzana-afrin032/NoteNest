@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Sign Up - NoteNest</title>
+
+
+    <!-- Google Font -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+
+    <!-- Font Awesome -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+
+    <style>
+
+        /* ===========================
+           RESET
+        =========================== */
+
+        * {
+
+            margin: 0;
+
+            padding: 0;
+
+            box-sizing: border-box;
+
+            font-family: 'Poppins', sans-serif;
+
+        }
+
+
+        /* ===========================
+           BODY
+        =========================== */
+
+        body {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            background: linear-gradient(
+                180deg,
+                #ffffff,
+                #fff4f8
+            );
+
+            padding: 20px;
+
+        }
+
+
+        /* ===========================
+           CONTAINER
+        =========================== */
+
+        .signup-container {
+
+            width: 100%;
+
+            max-width: 390px;
+
+            min-height: 700px;
+
+            background: #ffffff;
+
+            border-radius: 30px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 12px 35px rgba(0, 0, 0, 0.08);
+
+            position: relative;
+
+            overflow: hidden;
+
+        }
+
+
+        /* ===========================
+           BACKGROUND CIRCLE
+        =========================== */
+
+        .signup-container::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 200px;
+
+            height: 200px;
+
+            background: #ffdbe8;
+
+            border-radius: 50%;
+
+            top: -100px;
+
+            right: -90px;
+
+            opacity: .55;
+
+            filter: blur(4px);
+
+        }
+
+
+        /* ===========================
+           BACK BUTTON
+        =========================== */
+
+        .back-btn {
+
+            width: 42px;
+
+            height: 42px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: #fff0f5;
+
+            color: #ff6fa5;
+
+            font-size: 16px;
+
+            cursor: pointer;
+
+            position: relative;
+
+            z-index: 2;
+
+            transition: .3s;
+
+        }
+
+
+        .back-btn:hover {
+
+            transform: translateX(-3px);
+
+        }
+
+
+        /* ===========================
+           LOGO
+        =========================== */
+
+        .logo {
+
+            text-align: center;
+
+            margin-top: 15px;
+
+            position: relative;
+
+            z-index: 2;
+
+        }
+
+
+        .logo h1 {
+
+            font-size: 30px;
+
+            color: #222;
+
+            font-weight: 700;
+
+        }
+
+
+        .logo h1 span {
+
+            color: #ff6fa5;
+
+        }
+
+
+        .logo p {
+
+            font-size: 11px;
+
+            color: #999;
+
+            margin-top: 2px;
+
+        }
+
+
+        /* ===========================
+           SIGNUP HEADING
+        =========================== */
+
+        .signup-heading {
+
+            text-align: center;
+
+            margin-top: 25px;
+
+            margin-bottom: 22px;
+
+            position: relative;
+
+            z-index: 2;
+
+        }
+
+
+        .signup-heading h2 {
+
+            font-size: 25px;
+
+            color: #222;
+
+        }
+
+
+        .signup-heading p {
+
+            font-size: 12px;
+
+            color: #888;
+
+            margin-top: 5px;
+
+        }
+
+
+        /* ===========================
+           INPUT GROUP
+        =========================== */
+
+        .input-group {
+
+            margin-bottom: 15px;
+
+            position: relative;
+
+            z-index: 2;
+
+        }
+
+
+        .input-group label {
+
+            display: block;
+
+            font-size: 13px;
+
+            font-weight: 500;
+
+            color: #444;
+
+            margin-bottom: 7px;
+
+        }
+
+
+        /* ===========================
+           INPUT BOX
+        =========================== */
+
+        .input-box {
+
+            width: 100%;
+
+            height: 52px;
+
+            border: 1.5px solid #f2d5e1;
+
+            border-radius: 15px;
+
+            display: flex;
+
+            align-items: center;
+
+            padding: 0 15px;
+
+            transition: .3s;
+
+            background: #fff;
+
+        }
+
+
+        .input-box:focus-within {
+
+            border-color: #ff8fb9;
+
+            box-shadow:
+                0 0 0 3px rgba(255,111,165,.08);
+
+        }
+
+
+        .input-box > i {
+
+            color: #ff6fa5;
+
+            font-size: 16px;
+
+            margin-right: 10px;
+
+        }
+
+
+        .input-box input {
+
+            width: 100%;
+
+            height: 100%;
+
+            border: none;
+
+            outline: none;
+
+            font-size: 13px;
+
+            color: #333;
+
+            background: transparent;
+
+        }
+
+
+        .input-box input::placeholder {
+
+            color: #aaa;
+
+        }
+
+
+        /* ===========================
+           PASSWORD TOGGLE
+        =========================== */
+
+        .password-toggle {
+
+            border: none;
+
+            background: transparent;
+
+            color: #999;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+            margin-right: 0 !important;
+
+            transition: .3s;
+
+        }
+
+
+        .password-toggle:hover {
+
+            color: #ff6fa5;
+
+        }
+
+
+        /* ===========================
+           SIGNUP BUTTON
+        =========================== */
+
+        .signup-btn {
+
+            width: 100%;
+
+            height: 52px;
+
+            border: none;
+
+            border-radius: 40px;
+
+            background: linear-gradient(
+                90deg,
+                #ff6fa5,
+                #ff8fb9
+            );
+
+            color: #fff;
+
+            font-size: 15px;
+
+            font-weight: 500;
+
+            cursor: pointer;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 10px;
+
+            box-shadow:
+                0 10px 20px rgba(255,111,165,.25);
+
+            transition: .3s;
+
+            margin-top: 5px;
+
+        }
+
+
+        .signup-btn:hover {
+
+            transform: translateY(-2px);
+
+        }
+
+
+        .signup-btn:active {
+
+            transform: scale(.97);
+
+        }
+
+
+        .signup-btn:disabled {
+
+            opacity: .65;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+        }
+
+
+        /* ===========================
+           MESSAGE
+        =========================== */
+
+        #message {
+
+            text-align: center;
+
+            font-size: 11px;
+
+            min-height: 18px;
+
+            margin-top: 10px;
+
+            position: relative;
+
+            z-index: 2;
+
+        }
+
+
+        /* ===========================
+           LOGIN
+        =========================== */
+
+        .login {
+
+            text-align: center;
+
+            margin-top: 18px;
+
+            position: relative;
+
+            z-index: 2;
+
+        }
+
+
+        .login p {
+
+            font-size: 11px;
+
+            color: #888;
+
+        }
+
+
+        .login a {
+
+            color: #ff6fa5;
+
+            text-decoration: none;
+
+            font-weight: 600;
+
+        }
+
+
+        .login a:hover {
+
+            text-decoration: underline;
+
+        }
+
+
+        /* ===========================
+           FOOTER
+        =========================== */
+
+        .footer {
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            position: relative;
+
+            z-index: 2;
+
+        }
+
+
+        .footer p {
+
+            font-size: 10px;
+
+            color: #aaa;
+
+        }
+
+
+        .footer i {
+
+            color: #ff6fa5;
+
+            margin-right: 4px;
+
+        }
+
+
+        /* ===========================
+           MOBILE
+        =========================== */
+
+        @media (max-width: 480px) {
+
+            body {
+
+                padding: 0;
+
+                background: #fff;
+
+            }
+
+
+            .signup-container {
+
+                width: 100%;
+
+                max-width: 100%;
+
+                min-height: 100vh;
+
+                border-radius: 0;
+
+                box-shadow: none;
+
+                padding: 22px;
+
+            }
+
+
+            .signup-heading {
+
+                margin-top: 25px;
+
+            }
+
+        }
+
+
+        /* ===========================
+           SMALL MOBILE
+        =========================== */
+
+        @media (max-width: 360px) {
+
+            .signup-container {
+
+                padding: 18px;
+
+            }
+
+
+            .logo h1 {
+
+                font-size: 27px;
+
+            }
+
+
+            .signup-heading h2 {
+
+                font-size: 22px;
+
+            }
+
+
+            .input-box {
+
+                height: 48px;
+
+            }
+
+
+            .signup-btn {
+
+                height: 48px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="signup-container">
+
+
+        <!-- ===========================
+             BACK BUTTON
+        =========================== -->
+
+        <button
+            class="back-btn"
+            id="backBtn"
+            type="button">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+        </button>
+
+
+        <!-- ===========================
+             LOGO
+        =========================== -->
+
+        <div class="logo">
+
+            <h1>
+                Note<span>Nest</span>
+            </h1>
+
+            <p>
+                Your thoughts, organized.
+            </p>
+
+        </div>
+
+
+        <!-- ===========================
+             HEADING
+        =========================== -->
+
+        <div class="signup-heading">
+
+            <h2>
+                Create Account
+            </h2>
+
+            <p>
+                Join NoteNest and start organizing your notes
+            </p>
+
+        </div>
+
+
+        <!-- ===========================
+             FORM
+        =========================== -->
+
+        <form id="signupForm">
+
+
+            <!-- NAME -->
+
+            <div class="input-group">
+
+                <label for="name">
+                    Full Name
+                </label>
+
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-user"></i>
+
+
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your name"
+                        autocomplete="name">
+
+                </div>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="input-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-envelope"></i>
+
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        autocomplete="email">
+
+                </div>
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="input-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-lock"></i>
+
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="At least 6 characters"
+                        autocomplete="new-password">
+
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        id="passwordToggle">
+
+                        <i class="fa-solid fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="input-group">
+
+                <label for="confirmPassword">
+                    Confirm Password
+                </label>
+
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-lock"></i>
+
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Confirm your password"
+                        autocomplete="new-password">
+
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        id="confirmPasswordToggle">
+
+                        <i class="fa-solid fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- SIGNUP BUTTON -->
+
+            <button
+                type="submit"
+                class="signup-btn"
+                id="signupBtn">
+
+                <i class="fa-solid fa-user-plus"></i>
+
+                Create Account
+
+            </button>
+
+
+            <!-- MESSAGE -->
+
+            <p id="message"></p>
+
+
+        </form>
+
+
+        <!-- ===========================
+             LOGIN LINK
+        =========================== -->
+
+        <div class="login">
+
+            <p>
+
+                Already have an account?
+
+                <a href="login.html">
+                    Login
+                </a>
+
+            </p>
+
+        </div>
+
+
+        <!-- ===========================
+             FOOTER
+        =========================== -->
+
+        <div class="footer">
+
+            <p>
+
+                <i class="fa-solid fa-heart"></i>
+
+                Made for your thoughts
+
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+    <script>
+
+        // ==================================================
+        // GET ELEMENTS
+        // ==================================================
+
+        const signupForm =
+            document.getElementById("signupForm");
+
+
+        const nameInput =
+            document.getElementById("name");
+
+
+        const emailInput =
+            document.getElementById("email");
+
+
+        const passwordInput =
+            document.getElementById("password");
+
+
+        const confirmPasswordInput =
+            document.getElementById("confirmPassword");
+
+
+        const signupBtn =
+            document.getElementById("signupBtn");
+
+
+        const message =
+            document.getElementById("message");
+
+
+        // ==================================================
+        // PASSWORD TOGGLE
+        // ==================================================
+
+        document
+            .getElementById("passwordToggle")
+            .addEventListener(
+                "click",
+                function () {
+
+                    const icon =
+                        this.querySelector("i");
+
+
+                    if (
+                        passwordInput.type ===
+                        "password"
+                    ) {
+
+                        passwordInput.type =
+                            "text";
+
+
+                        icon.classList.remove(
+                            "fa-eye"
+                        );
+
+
+                        icon.classList.add(
+                            "fa-eye-slash"
+                        );
+
+                    } else {
+
+                        passwordInput.type =
+                            "password";
+
+
+                        icon.classList.remove(
+                            "fa-eye-slash"
+                        );
+
+
+                        icon.classList.add(
+                            "fa-eye"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        // ==================================================
+        // CONFIRM PASSWORD TOGGLE
+        // ==================================================
+
+        document
+            .getElementById("confirmPasswordToggle")
+            .addEventListener(
+                "click",
+                function () {
+
+                    const icon =
+                        this.querySelector("i");
+
+
+                    if (
+                        confirmPasswordInput.type ===
+                        "password"
+                    ) {
+
+                        confirmPasswordInput.type =
+                            "text";
+
+
+                        icon.classList.remove(
+                            "fa-eye"
+                        );
+
+
+                        icon.classList.add(
+                            "fa-eye-slash"
+                        );
+
+                    } else {
+
+                        confirmPasswordInput.type =
+                            "password";
+
+
+                        icon.classList.remove(
+                            "fa-eye-slash"
+                        );
+
+
+                        icon.classList.add(
+                            "fa-eye"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        // ==================================================
+        // SIGNUP
+        // ==================================================
+
+        signupForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const name =
+                    nameInput.value.trim();
+
+
+                const email =
+                    emailInput.value
+                        .trim()
+                        .toLowerCase();
+
+
+                const password =
+                    passwordInput.value;
+
+
+                const confirmPassword =
+                    confirmPasswordInput.value;
+
+
+                // =========================
+                // CLEAR MESSAGE
+                // =========================
+
+                message.textContent = "";
+
+
+                // =========================
+                // REQUIRED FIELDS
+                // =========================
+
+                if (
+                    !name ||
+                    !email ||
+                    !password ||
+                    !confirmPassword
+                ) {
+
+                    message.textContent =
+                        "Please fill in all fields.";
+
+                    message.style.color =
+                        "#ff4f81";
+
+                    return;
+
+                }
+
+
+                // =========================
+                // PASSWORD LENGTH
+                // =========================
+
+                if (
+                    password.length < 6
+                ) {
+
+                    message.textContent =
+                        "Password must be at least 6 characters.";
+
+                    message.style.color =
+                        "#ff4f81";
+
+                    return;
+
+                }
+
+
+                // =========================
+                // PASSWORD MATCH
+                // =========================
+
+                if (
+                    password !==
+                    confirmPassword
+                ) {
+
+                    message.textContent =
+                        "Passwords do not match.";
+
+                    message.style.color =
+                        "#ff4f81";
+
+                    return;
+
+                }
+
+
+                try {
+
+                    // =========================
+                    // LOADING
+                    // =========================
+
+                    signupBtn.disabled =
+                        true;
+
+
+                    signupBtn.innerHTML =
+                        '<i class="fa-solid fa-spinner fa-spin"></i> Creating Account...';
+
+
+                    // =========================
+                    // API REQUEST
+                    // =========================
+
+                    const response =
+                        await fetch(
+                            "http://localhost:5000/api/auth/signup",
+                            {
+
+                                method: "POST",
+
+                                headers: {
+
+                                    "Content-Type":
+                                        "application/json"
+
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        name:
+                                            name,
+
+                                        email:
+                                            email,
+
+                                        password:
+                                            password
+
+                                    })
+
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    console.log(
+                        "Signup response:",
+                        data
+                    );
+
+
+                    // =========================
+                    // ERROR
+                    // =========================
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data.message ||
+                            "Failed to create account."
+                        );
+
+                    }
+
+
+                    // =========================
+                    // SUCCESS
+                    // =========================
+
+                    message.textContent =
+                        "Account created successfully! ✓";
+
+
+                    message.style.color =
+                        "#ff6fa5";
+
+
+                    signupBtn.innerHTML =
+                        '<i class="fa-solid fa-check"></i> Account Created';
+
+
+                    // =========================
+                    // GO LOGIN
+                    // =========================
+
+                    setTimeout(
+                        function () {
+
+                            window.location.href =
+                                "login.html";
+
+                        },
+                        1200
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Signup error:",
+                        error
+                    );
+
+
+                    message.textContent =
+                        error.message ||
+                        "Failed to create account.";
+
+                    message.style.color =
+                        "#ff4f81";
+
+
+                    signupBtn.disabled =
+                        false;
+
+
+                    signupBtn.innerHTML =
+                        '<i class="fa-solid fa-user-plus"></i> Create Account';
+
+                }
+
+            }
+        );
+
+
+        // ==================================================
+        // BACK BUTTON
+        // ==================================================
+
+        document
+            .getElementById("backBtn")
+            .addEventListener(
+                "click",
+                function () {
+
+                    window.location.href =
+                        "login.html";
+
+                }
+            );
+
+    </script>
+
+
+</body>
+
+</html>
