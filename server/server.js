@@ -9,7 +9,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
-const Note = require("./models/Note");
+const Note = require("./models/note");
 const User = require("./models/User");
 const authMiddleware = require("./middleware/auth");
 
