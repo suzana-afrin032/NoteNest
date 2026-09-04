@@ -10,7 +10,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
 const Note = require("./models/note");
-const User = require("./models/User");
+const User = require("./models/user");
 const authMiddleware = require("./middleware/auth");
 
 require("dotenv").config();
