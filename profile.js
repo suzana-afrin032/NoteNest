@@ -349,32 +349,17 @@ function checkDailyReminder() {
 
 logoutBtn.addEventListener("click", function () {
 
-    const shouldLogout =
-        window.confirm(
-            "Are you sure you want to logout?"
-        );
-
-    if (!shouldLogout) {
-        return;
-    }
-
-
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
-
-    showNotification(
-        "Logging out..."
-    );
-
+    showNotification("You're logged out");
 
     setTimeout(function () {
-
         window.location.href = "login.html";
-
-    }, 700);
-
+    }, 1000);
 });
+
+
 
 
 // =========================

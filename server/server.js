@@ -2,6 +2,12 @@
 // IMPORTS
 // ==========================
 
+const path = require("path");
+
+require("dotenv").config({
+    path: path.join(__dirname, ".env")
+});
+
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -13,7 +19,19 @@ const Note = require("./models/note");
 const User = require("./models/user");
 const authMiddleware = require("./middleware/auth");
 
-require("dotenv").config();
+
+// ==========================
+// ENV CHECK
+// ==========================
+
+if (!process.env.JWT_SECRET || !process.env.MONGO_URI) {
+    console.log("❌ .env file load hoyni!");
+    console.log("JWT_SECRET ba MONGO_URI nei.");
+    console.log(
+        "Expected path:",
+        path.join(__dirname, ".env")
+    );
+}
 
 
 // ==========================
@@ -31,19 +49,19 @@ app.use(express.json());
 // ==========================
 
 async function connectDB() {
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 10000
-    });
+    try {
+        await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 10000
+        });
 
-    console.log("MongoDB connected successfully! ✅");
+        console.log("MongoDB connected successfully! ✅");
 
-  } catch (error) {
-    console.log("========== MONGODB ERROR ==========");
-    console.log("Main error:", error.message);
-    console.log("Error name:", error.name);
-    console.log("===================================");
-  }
+    } catch (error) {
+        console.log("========== MONGODB ERROR ==========");
+        console.log("Main error:", error.message);
+        console.log("Error name:", error.name);
+        console.log("===================================");
+    }
 }
 
 connectDB();
@@ -53,8 +71,17 @@ connectDB();
 // TEST ROUTE
 // ==========================
 
+app.get("/api/health", (req, res) => {
+    res.json({
+        ok: true,
+        dbState: mongoose.connection.readyState,
+        hasJwtSecret: !!process.env.JWT_SECRET
+    });
+});
+
+
 app.get("/", (req, res) => {
-  res.send("NoteNest Backend is Running! 🚀");
+    res.send("NoteNest Backend is Running! 🚀");
 });
 
 
@@ -69,75 +96,97 @@ app.get("/", (req, res) => {
 // ==========================
 
 app.post("/api/auth/signup", async (req, res) => {
-  try {
+    try {
 
-    const { name, email, password } = req.body;
+        const {
+            name,
+            email,
+            password
+        } = req.body;
 
-    // Check required fields
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        message: "Name, email and password are required"
-      });
+
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                message:
+                    "Name, email and password are required"
+            });
+        }
+
+
+        if (password.length < 6) {
+            return res.status(400).json({
+                message:
+                    "Password must be at least 6 characters"
+            });
+        }
+
+
+        const cleanEmail =
+            email.toLowerCase().trim();
+
+
+        const existingUser =
+            await User.findOne({
+                email: cleanEmail
+            });
+
+
+        if (existingUser) {
+            return res.status(409).json({
+                message:
+                    "Email already registered"
+            });
+        }
+
+
+        const hashedPassword =
+            await bcrypt.hash(password, 10);
+
+
+        const user = new User({
+            name: name.trim(),
+            email: cleanEmail,
+            password: hashedPassword
+        });
+
+
+        const savedUser =
+            await user.save();
+
+
+        console.log("================================");
+        console.log("NEW USER CREATED");
+        console.log("Name:", savedUser.name);
+        console.log("Email:", savedUser.email);
+        console.log("User ID:", savedUser._id);
+        console.log("================================");
+
+
+        res.status(201).json({
+            message:
+                "User registered successfully",
+
+            user: {
+                id: savedUser._id,
+                name: savedUser.name,
+                email: savedUser.email
+            }
+        });
+
+    } catch (error) {
+
+        console.log(
+            "Signup error:",
+            error.message
+        );
+
+        res.status(500).json({
+            message:
+                "Failed to register user",
+            error:
+                error.message
+        });
     }
-
-    // Check password length
-    if (password.length < 6) {
-      return res.status(400).json({
-        message: "Password must be at least 6 characters"
-      });
-    }
-
-    // Clean email
-    const cleanEmail = email.toLowerCase().trim();
-
-    // Check existing user
-    const existingUser = await User.findOne({
-      email: cleanEmail
-    });
-
-    if (existingUser) {
-      return res.status(409).json({
-        message: "Email already registered"
-      });
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
-    const user = new User({
-      name: name.trim(),
-      email: cleanEmail,
-      password: hashedPassword
-    });
-
-    const savedUser = await user.save();
-
-    console.log("================================");
-    console.log("NEW USER CREATED");
-    console.log("Name:", savedUser.name);
-    console.log("Email:", savedUser.email);
-    console.log("User ID:", savedUser._id);
-    console.log("================================");
-
-    res.status(201).json({
-      message: "User registered successfully",
-      user: {
-        id: savedUser._id,
-        name: savedUser.name,
-        email: savedUser.email
-      }
-    });
-
-  } catch (error) {
-
-    console.log("Signup error:", error.message);
-
-    res.status(500).json({
-      message: "Failed to register user",
-      error: error.message
-    });
-  }
 });
 
 
@@ -147,108 +196,147 @@ app.post("/api/auth/signup", async (req, res) => {
 // ==========================
 
 app.post("/api/auth/login", async (req, res) => {
-  try {
+    try {
 
-    const { email, password } = req.body;
+        const {
+            email,
+            password
+        } = req.body;
 
-    // Check required fields
-    if (!email || !password) {
-      return res.status(400).json({
-        message: "Email and password are required"
-      });
+
+        if (!email || !password) {
+            return res.status(400).json({
+                message:
+                    "Email and password are required"
+            });
+        }
+
+
+        const cleanEmail =
+            email.toLowerCase().trim();
+
+
+        const user =
+            await User.findOne({
+                email: cleanEmail
+            });
+
+
+        console.log("================================");
+        console.log("LOGIN DEBUG");
+        console.log(
+            "Email received:",
+            cleanEmail
+        );
+        console.log(
+            "User found:",
+            user ? "YES" : "NO"
+        );
+
+
+        if (user) {
+            console.log(
+                "DB email:",
+                user.email
+            );
+
+            console.log(
+                "DB user ID:",
+                user._id
+            );
+
+            console.log(
+                "Password exists:",
+                !!user.password
+            );
+        }
+
+        console.log("================================");
+
+
+        if (!user) {
+            return res.status(401).json({
+                message:
+                    "Invalid email or password"
+            });
+        }
+
+
+        const isPasswordCorrect =
+            await bcrypt.compare(
+                password,
+                user.password
+            );
+
+
+        console.log(
+            "Password correct:",
+            isPasswordCorrect
+        );
+
+
+        if (!isPasswordCorrect) {
+            return res.status(401).json({
+                message:
+                    "Invalid email or password"
+            });
+        }
+
+
+        const token = jwt.sign(
+            {
+                userId:
+                    user._id.toString(),
+
+                name:
+                    user.name,
+
+                email:
+                    user.email
+            },
+
+            process.env.JWT_SECRET,
+
+            {
+                expiresIn: "7d"
+            }
+        );
+
+
+        console.log(
+            "Login successful for:",
+            user.email
+        );
+
+
+        res.status(200).json({
+            message:
+                "Login successful",
+
+            token,
+
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
+        });
+
+    } catch (error) {
+
+        console.log(
+            "Login error:",
+            error.message
+        );
+
+        res.status(500).json({
+            message:
+                "Failed to login",
+
+            error:
+                error.message
+        });
     }
-
-    // Clean email
-    const cleanEmail = email.toLowerCase().trim();
-
-    // Find user
-    const user = await User.findOne({
-      email: cleanEmail
-    });
-
-    // ==========================
-    // LOGIN DEBUG
-    // ==========================
-
-    console.log("================================");
-    console.log("LOGIN DEBUG");
-    console.log("Email received:", cleanEmail);
-    console.log("User found:", user ? "YES" : "NO");
-
-    if (user) {
-      console.log("DB email:", user.email);
-      console.log("DB user ID:", user._id);
-      console.log("Password exists:", !!user.password);
-    }
-
-    console.log("================================");
-
-    // User not found
-    if (!user) {
-      return res.status(401).json({
-        message: "Invalid email or password"
-      });
-    }
-
-    // ==========================
-    // CHECK PASSWORD
-    // ==========================
-
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      user.password
-    );
-
-    console.log("Password correct:", isPasswordCorrect);
-
-    // Wrong password
-    if (!isPasswordCorrect) {
-      return res.status(401).json({
-        message: "Invalid email or password"
-      });
-    }
-
-    // ==========================
-    // CREATE JWT TOKEN
-    // ==========================
-
-    const token = jwt.sign(
-      {
-        userId: user._id.toString(),
-        name: user.name,
-        email: user.email
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d"
-      }
-    );
-
-    // ==========================
-    // LOGIN SUCCESS
-    // ==========================
-
-    console.log("Login successful for:", user.email);
-
-    res.status(200).json({
-      message: "Login successful",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email
-      }
-    });
-
-  } catch (error) {
-
-    console.log("Login error:", error.message);
-
-    res.status(500).json({
-      message: "Failed to login",
-      error: error.message
-    });
-  }
 });
 
 
@@ -262,91 +350,112 @@ app.post("/api/auth/login", async (req, res) => {
 // POST /api/auth/forgot-password
 // ==========================
 
-app.post("/api/auth/forgot-password", async (req, res) => {
-  try {
+app.post(
+    "/api/auth/forgot-password",
+    async (req, res) => {
 
-    const { email } = req.body;
+        try {
 
-    // Check email
-    if (!email) {
-      return res.status(400).json({
-        message: "Email is required"
-      });
+            const { email } = req.body;
+
+
+            if (!email) {
+                return res.status(400).json({
+                    message:
+                        "Email is required"
+                });
+            }
+
+
+            const cleanEmail =
+                email.toLowerCase().trim();
+
+
+            const user =
+                await User.findOne({
+                    email: cleanEmail
+                });
+
+
+            if (!user) {
+                return res.status(404).json({
+                    message:
+                        "No account found with this email"
+                });
+            }
+
+
+            const resetToken =
+                crypto
+                    .randomBytes(32)
+                    .toString("hex");
+
+
+            user.resetPasswordToken =
+                resetToken;
+
+
+            user.resetPasswordExpires =
+                new Date(
+                    Date.now() +
+                    15 * 60 * 1000
+                );
+
+
+            await user.save();
+
+
+
+            const resetUrl =
+                `https://notenest-frontend-xw19.onrender.com/reset-password.html?token=${resetToken}`;
+
+
+            console.log("");
+            console.log("================================");
+            console.log(
+                "PASSWORD RESET REQUEST"
+            );
+            console.log(
+                "Email:",
+                cleanEmail
+            );
+            console.log(
+                "RESET TOKEN:",
+                resetToken
+            );
+            console.log(
+                "PASSWORD RESET LINK:"
+            );
+            console.log(resetUrl);
+            console.log("================================");
+            console.log("");
+
+
+            res.status(200).json({
+                message:
+                    "Password reset link generated",
+
+                resetUrl:
+                    resetUrl
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Forgot password error:",
+                error.message
+            );
+
+            res.status(500).json({
+                message:
+                    "Server error",
+
+                error:
+                    error.message
+            });
+        }
     }
-
-    // Clean email
-    const cleanEmail = email.toLowerCase().trim();
-
-    // Find user
-    const user = await User.findOne({
-      email: cleanEmail
-    });
-
-    // User not found
-    if (!user) {
-      return res.status(404).json({
-        message: "No account found with this email"
-      });
-    }
-
-    // ==========================
-    // CREATE RESET TOKEN
-    // ==========================
-
-    const resetToken = crypto.randomBytes(32).toString("hex");
-
-    // Save token
-    user.resetPasswordToken = resetToken;
-
-    // Token expires after 15 minutes
-    user.resetPasswordExpires =
-      new Date(Date.now() + 15 * 60 * 1000);
-
-    await user.save();
-
-    // ==========================
-    // RESET URL
-    // ==========================
-
-    const resetUrl =
-      `http://127.0.0.1:5500/reset-password.html?token=${resetToken}`;
-
-    // ==========================
-    // SHOW RESET LINK IN SERVER
-    // ==========================
-
-    console.log("");
-    console.log("================================");
-    console.log("PASSWORD RESET REQUEST");
-    console.log("Email:", cleanEmail);
-    console.log("RESET TOKEN:", resetToken);
-    console.log("PASSWORD RESET LINK:");
-    console.log(resetUrl);
-    console.log("================================");
-    console.log("");
-
-    // ==========================
-    // RESPONSE
-    // ==========================
-
-    res.status(200).json({
-      message: "Password reset link generated",
-      resetUrl: resetUrl
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Forgot password error:",
-      error.message
-    );
-
-    res.status(500).json({
-      message: "Server error",
-      error: error.message
-    });
-  }
-});
+);
 
 
 // ==========================
@@ -354,83 +463,107 @@ app.post("/api/auth/forgot-password", async (req, res) => {
 // POST /api/auth/reset-password
 // ==========================
 
-app.post("/api/auth/reset-password", async (req, res) => {
-  try {
+app.post(
+    "/api/auth/reset-password",
+    async (req, res) => {
 
-    const {
-      token,
-      password
-    } = req.body;
+        try {
 
-    // Check required fields
-    if (!token || !password) {
-      return res.status(400).json({
-        message: "Token and password are required"
-      });
+            const {
+                token,
+                password
+            } = req.body;
+
+
+            if (!token || !password) {
+                return res.status(400).json({
+                    message:
+                        "Token and password are required"
+                });
+            }
+
+
+            if (password.length < 6) {
+                return res.status(400).json({
+                    message:
+                        "Password must be at least 6 characters"
+                });
+            }
+
+
+            const user =
+                await User.findOne({
+                    resetPasswordToken:
+                        token,
+
+                    resetPasswordExpires: {
+                        $gt: new Date()
+                    }
+                });
+
+
+            if (!user) {
+                return res.status(400).json({
+                    message:
+                        "Invalid or expired reset token"
+                });
+            }
+
+
+            const hashedPassword =
+                await bcrypt.hash(
+                    password,
+                    10
+                );
+
+
+            user.password =
+                hashedPassword;
+
+
+            user.resetPasswordToken =
+                null;
+
+            user.resetPasswordExpires =
+                null;
+
+
+            await user.save();
+
+
+            console.log("================================");
+            console.log(
+                "PASSWORD RESET SUCCESSFUL"
+            );
+            console.log(
+                "Email:",
+                user.email
+            );
+            console.log("================================");
+
+
+            res.status(200).json({
+                message:
+                    "Password reset successfully"
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Reset password error:",
+                error.message
+            );
+
+            res.status(500).json({
+                message:
+                    "Server error",
+
+                error:
+                    error.message
+            });
+        }
     }
-
-    // Check password length
-    if (password.length < 6) {
-      return res.status(400).json({
-        message: "Password must be at least 6 characters"
-      });
-    }
-
-    // Find user using token
-    const user = await User.findOne({
-      resetPasswordToken: token,
-      resetPasswordExpires: {
-        $gt: new Date()
-      }
-    });
-
-    // Invalid/expired token
-    if (!user) {
-      return res.status(400).json({
-        message: "Invalid or expired reset token"
-      });
-    }
-
-    // ==========================
-    // HASH NEW PASSWORD
-    // ==========================
-
-    const hashedPassword = await bcrypt.hash(
-      password,
-      10
-    );
-
-    // Update password
-    user.password = hashedPassword;
-
-    // Remove reset token
-    user.resetPasswordToken = null;
-    user.resetPasswordExpires = null;
-
-    await user.save();
-
-    console.log("================================");
-    console.log("PASSWORD RESET SUCCESSFUL");
-    console.log("Email:", user.email);
-    console.log("================================");
-
-    res.status(200).json({
-      message: "Password reset successfully"
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Reset password error:",
-      error.message
-    );
-
-    res.status(500).json({
-      message: "Server error",
-      error: error.message
-    });
-  }
-});
+);
 
 
 // ==================================================
@@ -443,55 +576,124 @@ app.post("/api/auth/reset-password", async (req, res) => {
 // POST /api/notes
 // ==========================
 
-app.post("/api/notes", authMiddleware, async (req, res) => {
-  try {
+app.post(
+    "/api/notes",
+    authMiddleware,
+    async (req, res) => {
 
-    const {
-      title,
-      content,
-      category
-    } = req.body;
+        try {
 
-    // Check required fields
-    if (!title || !content) {
-      return res.status(400).json({
-        message: "Title and content are required"
-      });
+            const {
+                title,
+                content,
+                category
+            } = req.body;
+
+
+            console.log(
+                "========== CREATE NOTE =========="
+            );
+
+            console.log(
+                "Title:",
+                title
+            );
+
+            console.log(
+                "Category received:",
+                category
+            );
+
+            console.log(
+                "User ID:",
+                req.user.userId
+            );
+
+            console.log(
+                "================================="
+            );
+
+
+            if (!title || !content) {
+                return res.status(400).json({
+                    message:
+                        "Title and content are required"
+                });
+            }
+
+
+            const cleanCategory =
+                category &&
+                typeof category === "string"
+                    ? category.trim()
+                    : "Study";
+
+
+            const note = new Note({
+
+                title:
+                    title.trim(),
+
+                content:
+                    content.trim(),
+
+                category:
+                    cleanCategory,
+
+                userId:
+                    req.user.userId
+            });
+
+
+            const savedNote =
+                await note.save();
+
+
+            console.log(
+                "Saved category:",
+                savedNote.category
+            );
+
+
+            console.log(
+                "Note created by user:",
+                req.user.userId
+            );
+
+
+            res.status(201).json({
+
+                message:
+                    "Note created successfully",
+
+                note:
+                    savedNote
+            });
+
+        } catch (error) {
+
+            console.log(
+                "========== CREATE NOTE ERROR =========="
+            );
+
+            console.log(error);
+
+            console.log(
+                "======================================="
+            );
+
+
+            res.status(500).json({
+
+                message:
+                    "Failed to create note",
+
+                error:
+                    error.message
+            });
+        }
     }
-
-    // Create note
-    const note = new Note({
-      title: title.trim(),
-      content: content.trim(),
-      category: category || "Study",
-      userId: req.user.userId
-    });
-
-    const savedNote = await note.save();
-
-    console.log(
-      "Note created by user:",
-      req.user.userId
-    );
-
-    res.status(201).json({
-      message: "Note created successfully",
-      note: savedNote
-    });
-
-  } catch (error) {
-
-    console.log(
-      "Error creating note:",
-      error.message
-    );
-
-    res.status(500).json({
-      message: "Failed to create note",
-      error: error.message
-    });
-  }
-});
+);
 
 
 // ==========================
@@ -499,43 +701,66 @@ app.post("/api/notes", authMiddleware, async (req, res) => {
 // GET /api/notes
 // ==========================
 
-app.get("/api/notes", authMiddleware, async (req, res) => {
-  try {
+app.get(
+    "/api/notes",
+    authMiddleware,
+    async (req, res) => {
 
-    console.log("================================");
-    console.log("GET /api/notes");
-    console.log(
-      "Logged in user ID:",
-      req.user.userId
-    );
-    console.log("================================");
+        try {
 
-    const notes = await Note.find({
-      userId: req.user.userId
-    }).sort({
-      createdAt: -1
-    });
+            console.log(
+                "================================"
+            );
 
-    console.log(
-      "User notes found:",
-      notes.length
-    );
+            console.log(
+                "GET /api/notes"
+            );
 
-    res.status(200).json(notes);
+            console.log(
+                "Logged in user ID:",
+                req.user.userId
+            );
 
-  } catch (error) {
+            console.log(
+                "================================"
+            );
 
-    console.log(
-      "GET USER NOTES ERROR:",
-      error.message
-    );
 
-    res.status(500).json({
-      message: "Failed to fetch notes",
-      error: error.message
-    });
-  }
-});
+            const notes =
+                await Note.find({
+                    userId:
+                        req.user.userId
+                }).sort({
+                    createdAt: -1
+                });
+
+
+            console.log(
+                "User notes found:",
+                notes.length
+            );
+
+
+            res.status(200).json(notes);
+
+        } catch (error) {
+
+            console.log(
+                "GET USER NOTES ERROR:",
+                error.message
+            );
+
+            res.status(500).json({
+
+                message:
+                    "Failed to fetch notes",
+
+                error:
+                    error.message
+            });
+        }
+    }
+);
 
 
 // ==========================
@@ -543,35 +768,52 @@ app.get("/api/notes", authMiddleware, async (req, res) => {
 // GET /api/notes/:id
 // ==========================
 
-app.get("/api/notes/:id", authMiddleware, async (req, res) => {
-  try {
+app.get(
+    "/api/notes/:id",
+    authMiddleware,
+    async (req, res) => {
 
-    const note = await Note.findOne({
-      _id: req.params.id,
-      userId: req.user.userId
-    });
+        try {
 
-    if (!note) {
-      return res.status(404).json({
-        message: "Note not found"
-      });
+            const note =
+                await Note.findOne({
+
+                    _id:
+                        req.params.id,
+
+                    userId:
+                        req.user.userId
+                });
+
+
+            if (!note) {
+                return res.status(404).json({
+                    message:
+                        "Note not found"
+                });
+            }
+
+
+            res.status(200).json(note);
+
+        } catch (error) {
+
+            console.log(
+                "Error fetching note:",
+                error.message
+            );
+
+            res.status(500).json({
+
+                message:
+                    "Failed to fetch note",
+
+                error:
+                    error.message
+            });
+        }
     }
-
-    res.status(200).json(note);
-
-  } catch (error) {
-
-    console.log(
-      "Error fetching note:",
-      error.message
-    );
-
-    res.status(500).json({
-      message: "Failed to fetch note",
-      error: error.message
-    });
-  }
-});
+);
 
 
 // ==========================
@@ -579,65 +821,142 @@ app.get("/api/notes/:id", authMiddleware, async (req, res) => {
 // PUT /api/notes/:id
 // ==========================
 
-app.put("/api/notes/:id", authMiddleware, async (req, res) => {
-  try {
+app.put(
+    "/api/notes/:id",
+    authMiddleware,
+    async (req, res) => {
 
-    const {
-      title,
-      content,
-      category
-    } = req.body;
+        try {
 
-    // Check required fields
-    if (!title || !content) {
-      return res.status(400).json({
-        message: "Title and content are required"
-      });
-    }
+            const {
+                title,
+                content,
+                category
+            } = req.body;
 
-    // Update note
-    const updatedNote =
-      await Note.findOneAndUpdate(
-        {
-          _id: req.params.id,
-          userId: req.user.userId
-        },
-        {
-          title: title.trim(),
-          content: content.trim(),
-          category: category || "Study"
-        },
-        {
-          new: true,
-          runValidators: true
+
+            console.log(
+                "========== UPDATE NOTE =========="
+            );
+
+            console.log(
+                "Note ID:",
+                req.params.id
+            );
+
+            console.log(
+                "Title:",
+                title
+            );
+
+            console.log(
+                "Category received:",
+                category
+            );
+
+            console.log(
+                "User ID:",
+                req.user.userId
+            );
+
+            console.log(
+                "================================="
+            );
+
+
+            if (!title || !content) {
+                return res.status(400).json({
+                    message:
+                        "Title and content are required"
+                });
+            }
+
+
+            const cleanCategory =
+                category &&
+                typeof category === "string"
+                    ? category.trim()
+                    : "Study";
+
+
+            const updatedNote =
+                await Note.findOneAndUpdate(
+
+                    {
+                        _id:
+                            req.params.id,
+
+                        userId:
+                            req.user.userId
+                    },
+
+                    {
+                        title:
+                            title.trim(),
+
+                        content:
+                            content.trim(),
+
+                        category:
+                            cleanCategory
+                    },
+
+                    {
+                        new: true,
+
+                        runValidators: true
+                    }
+                );
+
+
+            if (!updatedNote) {
+                return res.status(404).json({
+
+                    message:
+                        "Note not found or you do not have permission"
+                });
+            }
+
+
+            console.log(
+                "Updated category:",
+                updatedNote.category
+            );
+
+
+            res.status(200).json({
+
+                message:
+                    "Note updated successfully",
+
+                note:
+                    updatedNote
+            });
+
+        } catch (error) {
+
+            console.log(
+                "========== UPDATE NOTE ERROR =========="
+            );
+
+            console.log(error);
+
+            console.log(
+                "======================================="
+            );
+
+
+            res.status(500).json({
+
+                message:
+                    "Failed to update note",
+
+                error:
+                    error.message
+            });
         }
-      );
-
-    if (!updatedNote) {
-      return res.status(404).json({
-        message:
-          "Note not found or you do not have permission"
-      });
     }
-
-    res.status(200).json({
-      message: "Note updated successfully",
-      note: updatedNote
-    });
-
-  } catch (error) {
-
-    console.log(
-      "Error updating note:",
-      error.message
-    );
-
-    res.status(500).json({
-      message: "Failed to update note",
-      error: error.message
-    });
-  }
-});
+);
 
 
 // ==========================
@@ -645,50 +964,74 @@ app.put("/api/notes/:id", authMiddleware, async (req, res) => {
 // DELETE /api/notes/:id
 // ==========================
 
-app.delete("/api/notes/:id", authMiddleware, async (req, res) => {
-  try {
+app.delete(
+    "/api/notes/:id",
+    authMiddleware,
+    async (req, res) => {
 
-    const deletedNote =
-      await Note.findOneAndDelete({
-        _id: req.params.id,
-        userId: req.user.userId
-      });
+        try {
 
-    if (!deletedNote) {
-      return res.status(404).json({
-        message:
-          "Note not found or you do not have permission"
-      });
+            const deletedNote =
+                await Note.findOneAndDelete({
+
+                    _id:
+                        req.params.id,
+
+                    userId:
+                        req.user.userId
+                });
+
+
+            if (!deletedNote) {
+                return res.status(404).json({
+
+                    message:
+                        "Note not found or you do not have permission"
+                });
+            }
+
+
+            res.status(200).json({
+
+                message:
+                    "Note deleted successfully",
+
+                note:
+                    deletedNote
+            });
+
+        } catch (error) {
+
+            console.log(
+                "Error deleting note:",
+                error.message
+            );
+
+            res.status(500).json({
+
+                message:
+                    "Failed to delete note",
+
+                error:
+                    error.message
+            });
+        }
     }
-
-    res.status(200).json({
-      message: "Note deleted successfully",
-      note: deletedNote
-    });
-
-  } catch (error) {
-
-    console.log(
-      "Error deleting note:",
-      error.message
-    );
-
-    res.status(500).json({
-      message: "Failed to delete note",
-      error: error.message
-    });
-  }
-});
+);
 
 
 // ==================================================
 // SERVER
 // ==================================================
 
-const PORT = process.env.PORT || 5000;
+const PORT =
+    process.env.PORT || 5000;
+
 
 app.listen(PORT, () => {
-  console.log(
-    `NoteNest Backend running on http://localhost:${PORT}`
-  );
+
+    console.log(
+        `NoteNest Backend running on http://localhost:${PORT}`
+    );
+
 });

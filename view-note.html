@@ -3,19 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>View Note - NoteNest</title>
 
+    <!-- Poppins Font -->
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet"
     >
 
+    <!-- Font Awesome -->
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     >
 
     <style>
+
+        /* ===========================
+           RESET
+        =========================== */
+
         * {
             margin: 0;
             padding: 0;
@@ -23,288 +31,474 @@
             font-family: "Poppins", sans-serif;
         }
 
+
+        /* ===========================
+           BODY
+        =========================== */
+
         body {
             min-height: 100vh;
-            background: linear-gradient(180deg, #ffffff, #fff4f8);
+
+            background: linear-gradient(
+                180deg,
+                #ffffff,
+                #f5f9ff
+            );
+
             color: #222;
+
             display: flex;
             justify-content: center;
+
             padding: 20px;
         }
+
+
+        /* ===========================
+           CONTAINER
+        =========================== */
 
         .container {
             width: 52%;
             min-width: 350px;
             max-width: 650px;
+
             min-height: calc(100vh - 40px);
+
             background: #ffffff;
+
             border-radius: 30px;
+
             padding: 25px 22px 40px;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+
+            box-shadow:
+                0 12px 35px rgba(37, 99, 235, 0.08);
         }
 
-        /* ================= HEADER ================= */
+
+        /* ===========================
+           HEADER
+        =========================== */
 
         .top-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
+
             margin-bottom: 25px;
         }
+
 
         .back-btn {
             width: 44px;
             height: 44px;
+
             border: none;
             border-radius: 50%;
-            background: #fff0f5;
-            color: #ff6fa5;
+
+            background: #eff6ff;
+            color: #2563eb;
+
             font-size: 17px;
+
             cursor: pointer;
+
             transition: 0.25s;
         }
 
+
         .back-btn:hover {
-            background: #ff6fa5;
+            background: #2563eb;
             color: #ffffff;
+
             transform: translateX(-2px);
         }
+
 
         .header-title {
             font-size: 21px;
             font-weight: 600;
+
             color: #222;
         }
+
 
         .header-spacer {
             width: 44px;
         }
 
-        /* ================= NOTE ================= */
+
+        /* ===========================
+           NOTE CARD
+        =========================== */
 
         .note-card {
-            background: #fff7fa;
-            border: 1px solid #ffe1eb;
+            background: #f8fbff;
+
+            border: 1px solid #dbeafe;
+
             border-radius: 24px;
+
             padding: 25px 22px;
-            box-shadow: 0 8px 25px rgba(255, 111, 165, 0.08);
+
+            box-shadow:
+                0 8px 25px rgba(37, 99, 235, 0.08);
         }
 
-        /* ================= ICON ================= */
+
+        /* ===========================
+           ICON
+        =========================== */
 
         .note-icon-wrapper {
             width: 58px;
             height: 58px;
+
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #ffe8f0;
-            color: #ff6fa5;
+
+            background: #dbeafe;
+            color: #2563eb;
+
             border-radius: 18px;
+
             font-size: 23px;
+
             margin-bottom: 18px;
         }
 
-        /* ================= TITLE ================= */
+
+        /* ===========================
+           TITLE
+        =========================== */
 
         .note-title {
             font-size: 27px;
             font-weight: 600;
+
             color: #222;
+
             line-height: 1.35;
+
             margin-bottom: 12px;
+
             word-break: break-word;
         }
 
-        /* ================= EDIT INPUT ================= */
+
+        /* ===========================
+           EDIT INPUT
+        =========================== */
 
         .edit-input,
         .edit-textarea,
         .edit-select {
             width: 100%;
-            border: 1px solid #ffd5e3;
+
+            border: 1px solid #bfdbfe;
+
             background: #ffffff;
+
             border-radius: 14px;
+
             outline: none;
+
             color: #333;
+
             font-family: "Poppins", sans-serif;
+
             transition: 0.25s;
         }
 
+
         .edit-input {
             padding: 13px 15px;
+
             font-size: 20px;
             font-weight: 600;
+
             margin-bottom: 15px;
         }
 
+
         .edit-textarea {
             min-height: 260px;
+
             padding: 14px 15px;
+
             font-size: 14px;
+
             line-height: 1.8;
+
             resize: vertical;
         }
 
+
         .edit-select {
             padding: 10px 13px;
+
             font-size: 13px;
+
             cursor: pointer;
         }
+
 
         .edit-input:focus,
         .edit-textarea:focus,
         .edit-select:focus {
-            border-color: #ff8eb7;
-            box-shadow: 0 0 0 3px rgba(255, 111, 165, 0.10);
+            border-color: #60a5fa;
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.10);
         }
 
-        /* ================= META ================= */
+
+        /* ===========================
+           META
+        =========================== */
 
         .note-meta {
             display: flex;
+
             align-items: center;
+
             flex-wrap: wrap;
+
             gap: 10px;
+
             margin-bottom: 25px;
         }
 
+
         .category-badge {
             display: inline-flex;
+
             align-items: center;
+
             padding: 7px 13px;
+
             border-radius: 20px;
-            background: #ffe8f0;
-            color: #ff5f98;
+
+            background: #dbeafe;
+
+            color: #2563eb;
+
             font-size: 12px;
+
             font-weight: 500;
         }
 
+
         .date-text {
             color: #999;
+
             font-size: 12px;
         }
 
-        /* ================= CONTENT ================= */
+
+        /* ===========================
+           CONTENT
+        =========================== */
 
         .content-title {
             font-size: 14px;
+
             font-weight: 600;
+
             color: #555;
+
             margin-bottom: 10px;
         }
 
+
         .note-content {
             color: #555;
+
             font-size: 14px;
+
             line-height: 1.9;
+
             white-space: pre-wrap;
+
             word-break: break-word;
         }
 
-        /* ================= SAVE BUTTON ================= */
+
+        /* ===========================
+           SAVE BUTTON
+        =========================== */
 
         .save-btn {
             width: 100%;
+
             border: none;
-            background: #ff6fa5;
+
+            background: linear-gradient(
+                90deg,
+                #2563eb,
+                #3b82f6
+            );
+
             color: #ffffff;
+
             padding: 13px 18px;
+
             border-radius: 14px;
+
             font-size: 14px;
+
             font-weight: 600;
+
             cursor: pointer;
+
             margin-top: 22px;
+
             transition: 0.25s;
+
+            box-shadow:
+                0 8px 18px rgba(37, 99, 235, 0.20);
         }
 
+
         .save-btn:hover {
-            background: #ff5b98;
+            background: #1d4ed8;
+
             transform: translateY(-1px);
+
+            box-shadow:
+                0 10px 22px rgba(37, 99, 235, 0.25);
         }
+
 
         .save-btn:disabled {
             opacity: 0.6;
+
             cursor: not-allowed;
+
             transform: none;
         }
 
-        /* ================= LOADING ================= */
+
+        /* ===========================
+           LOADING
+        =========================== */
 
         .loading {
             text-align: center;
+
             padding: 60px 20px;
+
             color: #999;
+
             font-size: 14px;
         }
+
 
         .loading i {
             display: block;
-            color: #ff6fa5;
+
+            color: #2563eb;
+
             font-size: 25px;
+
             margin-bottom: 12px;
         }
 
-        /* ================= ERROR ================= */
+
+        /* ===========================
+           ERROR
+        =========================== */
 
         .error-message {
             display: none;
+
             text-align: center;
+
             padding: 50px 20px;
+
             color: #999;
+
             font-size: 14px;
         }
 
+
         .error-message i {
             display: block;
-            color: #ff6fa5;
+
+            color: #2563eb;
+
             font-size: 35px;
+
             margin-bottom: 15px;
         }
 
-        /* ================= MOBILE ================= */
+
+        /* ===========================
+           MOBILE
+        =========================== */
 
         @media (max-width: 600px) {
+
             body {
                 padding: 0;
+
                 background: #ffffff;
+
                 display: block;
             }
 
+
             .container {
                 width: 100%;
+
                 min-width: 0;
+
                 max-width: none;
+
                 min-height: 100vh;
+
                 border-radius: 0;
+
                 box-shadow: none;
+
                 padding: 22px 18px 35px;
             }
+
 
             .header-title {
                 font-size: 19px;
             }
 
+
             .note-card {
                 padding: 22px 18px;
+
                 border-radius: 22px;
             }
+
 
             .note-title {
                 font-size: 23px;
             }
 
+
             .edit-input {
                 font-size: 18px;
             }
 
+
             .note-content {
                 font-size: 13px;
+
                 line-height: 1.8;
             }
         }
+
     </style>
+
 </head>
+
 
 <body>
 
@@ -322,12 +516,14 @@
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
 
+
             <h1
                 class="header-title"
                 id="headerTitle"
             >
                 View Note
             </h1>
+
 
             <div class="header-spacer"></div>
 
@@ -340,8 +536,11 @@
             class="loading"
             id="loading"
         >
+
             <i class="fa-solid fa-spinner fa-spin"></i>
+
             <p>Loading note...</p>
+
         </div>
 
 
@@ -351,8 +550,13 @@
             class="error-message"
             id="errorMessage"
         >
+
             <i class="fa-regular fa-face-sad-tear"></i>
-            <p>Unable to load this note.</p>
+
+            <p>
+                Unable to load this note.
+            </p>
+
         </div>
 
 
@@ -364,12 +568,16 @@
             style="display: none;"
         >
 
+            <!-- ICON -->
+
             <div class="note-icon-wrapper">
+
                 <i class="fa-regular fa-note-sticky"></i>
+
             </div>
 
 
-            <!-- ================= TITLE ================= -->
+            <!-- TITLE -->
 
             <h2
                 class="note-title"
@@ -379,7 +587,7 @@
             </h2>
 
 
-            <!-- ================= META ================= -->
+            <!-- META -->
 
             <div class="note-meta">
 
@@ -389,6 +597,7 @@
                 >
                     Study
                 </span>
+
 
                 <span
                     class="date-text"
@@ -400,11 +609,12 @@
             </div>
 
 
-            <!-- ================= CONTENT ================= -->
+            <!-- CONTENT -->
 
             <h3 class="content-title">
                 Note Content
             </h3>
+
 
             <div
                 class="note-content"
@@ -414,7 +624,7 @@
             </div>
 
 
-            <!-- ================= SAVE BUTTON ================= -->
+            <!-- SAVE BUTTON -->
 
             <button
                 class="save-btn"
@@ -422,8 +632,11 @@
                 type="button"
                 style="display: none;"
             >
+
                 <i class="fa-solid fa-check"></i>
+
                 Save Changes
+
             </button>
 
         </div>
@@ -433,145 +646,248 @@
 
     <script>
 
-        /* ================= AUTHENTICATION ================= */
+        /* ===========================
+           AUTHENTICATION
+        =========================== */
 
         const token = localStorage.getItem("token");
 
         if (!token) {
-            alert("Please login first.");
+
             window.location.href = "login.html";
+
         }
 
 
-        /* ================= URL DATA ================= */
+        /* ===========================
+           URL DATA
+        =========================== */
 
-        const urlParams = new URLSearchParams(
-            window.location.search
-        );
+        const urlParams =
+            new URLSearchParams(
+                window.location.search
+            );
 
-        const noteId = urlParams.get("id");
+
+        const noteId =
+            urlParams.get("id");
+
 
         const editMode =
             urlParams.get("edit") === "true";
 
 
         if (!noteId) {
+
             alert("Note ID not found.");
-            window.location.href = "dashboard.html";
+
+            window.location.href =
+                "dashboard.html";
+
         }
 
 
-        /* ================= ELEMENTS ================= */
+        /* ===========================
+           ELEMENTS
+        =========================== */
 
         const loading =
             document.getElementById("loading");
 
+
         const errorMessage =
             document.getElementById("errorMessage");
+
 
         const noteCard =
             document.getElementById("noteCard");
 
+
         const noteTitle =
             document.getElementById("noteTitle");
+
 
         const noteCategory =
             document.getElementById("noteCategory");
 
+
         const noteDate =
             document.getElementById("noteDate");
+
 
         const noteContent =
             document.getElementById("noteContent");
 
+
         const backBtn =
             document.getElementById("backBtn");
 
+
         const saveBtn =
             document.getElementById("saveBtn");
+
 
         const headerTitle =
             document.getElementById("headerTitle");
 
 
-        /* ================= CURRENT NOTE ================= */
+        /* ===========================
+           API
+        =========================== */
+
+        const API_URL =
+            "https://notenest-s0gh.onrender.com";
+
+
+        /* ===========================
+           CURRENT NOTE
+        =========================== */
 
         let currentNote = null;
 
 
-        /* ================= LOAD NOTE ================= */
+        /* ===========================
+           SESSION EXPIRED
+        =========================== */
+
+        function handleSessionExpired() {
+
+            localStorage.removeItem("token");
+
+            localStorage.removeItem("user");
+
+            sessionStorage.setItem(
+                "authError",
+                "Session expired. Please login again."
+            );
+
+            window.location.href =
+                "login.html";
+        }
+
+
+        /* ===========================
+           LOAD NOTE
+        =========================== */
 
         async function loadNote() {
 
             try {
 
-                const response = await fetch(
-                    `http://localhost:5000/api/notes/${noteId}`,
-                    {
-                        method: "GET",
+                /*
+                 * IMPORTANT:
+                 * Correct API URL
+                 */
 
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"
+                const response =
+                    await fetch(
+                        `${API_URL}/api/notes/${encodeURIComponent(noteId)}`,
+                        {
+                            method: "GET",
+
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${token}`,
+
+                                "Content-Type":
+                                    "application/json"
+                            }
                         }
-                    }
-                );
+                    );
 
 
-                /* ================= AUTH ERROR ================= */
+                /* ===========================
+                   AUTH ERROR
+                =========================== */
 
                 if (response.status === 401) {
 
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("user");
-
-                    alert(
-                        "Session expired. Please login again."
-                    );
-
-                    window.location.href =
-                        "login.html";
+                    handleSessionExpired();
 
                     return;
                 }
 
 
+                /* ===========================
+                   OTHER ERROR
+                =========================== */
+
                 if (!response.ok) {
+
+                    const errorData =
+                        await response
+                            .json()
+                            .catch(() => ({}));
+
+
                     throw new Error(
+                        errorData.message ||
                         "Failed to load note"
                     );
                 }
 
 
+                /* ===========================
+                   RESPONSE
+                =========================== */
+
                 const data =
                     await response.json();
 
+
+                console.log(
+                    "View Note Response:",
+                    data
+                );
+
+
+                /*
+                 * Supports both:
+                 *
+                 * { note: {...} }
+                 *
+                 * and
+                 *
+                 * {...}
+                 */
 
                 const note =
                     data.note || data;
 
 
-                if (!note) {
+                if (!note || !note._id) {
+
                     throw new Error(
                         "Note not found"
                     );
+
                 }
 
 
                 currentNote = note;
 
 
-                /* ================= DISPLAY ================= */
+                /* ===========================
+                   DISPLAY TITLE
+                =========================== */
 
                 noteTitle.textContent =
                     note.title ||
                     "Untitled Note";
 
 
+                /* ===========================
+                   DISPLAY CATEGORY
+                =========================== */
+
                 noteCategory.textContent =
                     note.category ||
                     "Study";
 
+
+                /* ===========================
+                   DISPLAY CONTENT
+                =========================== */
 
                 noteContent.textContent =
                     note.content ||
@@ -579,12 +895,17 @@
                     "No content available.";
 
 
-                /* ================= DATE ================= */
+                /* ===========================
+                   DISPLAY DATE
+                =========================== */
 
                 if (note.createdAt) {
 
                     const date =
-                        new Date(note.createdAt);
+                        new Date(
+                            note.createdAt
+                        );
+
 
                     noteDate.textContent =
                         date.toLocaleDateString(
@@ -600,26 +921,37 @@
 
                     noteDate.textContent =
                         "Recently created";
+
                 }
 
 
-                /* ================= SHOW ================= */
+                /* ===========================
+                   SHOW NOTE
+                =========================== */
 
                 loading.style.display =
                     "none";
+
+
+                errorMessage.style.display =
+                    "none";
+
 
                 noteCard.style.display =
                     "block";
 
 
-                /* ================= EDIT MODE ================= */
+                /* ===========================
+                   EDIT MODE
+                =========================== */
 
                 if (editMode) {
+
                     enableEditMode();
+
                 }
 
             }
-
             catch (error) {
 
                 console.error(
@@ -627,16 +959,22 @@
                     error
                 );
 
+
                 loading.style.display =
                     "none";
 
+
                 errorMessage.style.display =
                     "block";
+
             }
+
         }
 
 
-        /* ================= ENABLE EDIT MODE ================= */
+        /* ===========================
+           ENABLE EDIT MODE
+        =========================== */
 
         function enableEditMode() {
 
@@ -644,65 +982,153 @@
                 "Edit Note";
 
 
-            /* ================= TITLE INPUT ================= */
+            /* ===========================
+               TITLE INPUT
+            =========================== */
 
             const titleInput =
                 document.createElement("input");
 
-            titleInput.type = "text";
-            titleInput.className = "edit-input";
-            titleInput.id = "editTitle";
+
+            titleInput.type =
+                "text";
+
+
+            titleInput.className =
+                "edit-input";
+
+
+            titleInput.id =
+                "editTitle";
+
+
             titleInput.value =
                 currentNote.title || "";
 
 
-            noteTitle.replaceWith(titleInput);
+            noteTitle.replaceWith(
+                titleInput
+            );
 
 
-            /* ================= CATEGORY SELECT ================= */
+            /* ===========================
+               CATEGORY SELECT
+            =========================== */
 
             const categorySelect =
-                document.createElement("select");
+                document.createElement(
+                    "select"
+                );
+
 
             categorySelect.className =
                 "edit-select";
+
 
             categorySelect.id =
                 "editCategory";
 
 
-            const categories = [
+            /*
+             * Load default + custom
+             * categories
+             */
+
+            let categories = [
                 "Study",
                 "Ideas",
                 "Personal"
             ];
 
 
+            try {
+
+                const savedCategories =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "noteNestCategories"
+                        )
+                    );
+
+
+                if (
+                    Array.isArray(
+                        savedCategories
+                    )
+                ) {
+
+                    categories =
+                        savedCategories;
+
+                }
+
+            }
+            catch (error) {
+
+                console.log(
+                    "Could not load categories."
+                );
+
+            }
+
+
+            /*
+             * Make sure current
+             * category exists
+             */
+
+            const currentCategory =
+                currentNote.category ||
+                "Study";
+
+
+            if (
+                !categories.some(
+                    category =>
+                        category.toLowerCase() ===
+                        currentCategory.toLowerCase()
+                )
+            ) {
+
+                categories.push(
+                    currentCategory
+                );
+
+            }
+
+
             categories.forEach(
-                function (category) {
+                category => {
 
                     const option =
-                        document.createElement("option");
+                        document.createElement(
+                            "option"
+                        );
+
 
                     option.value =
                         category;
 
+
                     option.textContent =
                         category;
 
+
                     if (
-                        (
-                            currentNote.category ||
-                            "Study"
-                        ).toLowerCase() ===
-                        category.toLowerCase()
+                        category.toLowerCase() ===
+                        currentCategory.toLowerCase()
                     ) {
-                        option.selected = true;
+
+                        option.selected =
+                            true;
+
                     }
+
 
                     categorySelect.appendChild(
                         option
                     );
+
                 }
             );
 
@@ -712,16 +1138,23 @@
             );
 
 
-            /* ================= CONTENT TEXTAREA ================= */
+            /* ===========================
+               CONTENT TEXTAREA
+            =========================== */
 
             const contentTextarea =
-                document.createElement("textarea");
+                document.createElement(
+                    "textarea"
+                );
+
 
             contentTextarea.className =
                 "edit-textarea";
 
+
             contentTextarea.id =
                 "editContent";
+
 
             contentTextarea.value =
                 currentNote.content ||
@@ -734,40 +1167,68 @@
             );
 
 
-            /* ================= SAVE BUTTON ================= */
+            /* ===========================
+               SAVE BUTTON
+            =========================== */
 
             saveBtn.style.display =
                 "block";
+
         }
 
 
-        /* ================= SAVE CHANGES ================= */
+        /* ===========================
+           SAVE CHANGES
+        =========================== */
 
         saveBtn.addEventListener(
             "click",
             async function () {
 
                 const titleInput =
-                    document.getElementById("editTitle");
+                    document.getElementById(
+                        "editTitle"
+                    );
+
 
                 const categorySelect =
-                    document.getElementById("editCategory");
+                    document.getElementById(
+                        "editCategory"
+                    );
+
 
                 const contentTextarea =
-                    document.getElementById("editContent");
+                    document.getElementById(
+                        "editContent"
+                    );
+
+
+                if (
+                    !titleInput ||
+                    !categorySelect ||
+                    !contentTextarea
+                ) {
+
+                    return;
+
+                }
 
 
                 const updatedTitle =
                     titleInput.value.trim();
 
+
                 const updatedCategory =
                     categorySelect.value;
+
 
                 const updatedContent =
                     contentTextarea.value.trim();
 
 
-                /* ================= VALIDATION ================= */
+                /* ===========================
+                   VALIDATION
+                =========================== */
 
                 if (!updatedTitle) {
 
@@ -778,6 +1239,7 @@
                     titleInput.focus();
 
                     return;
+
                 }
 
 
@@ -790,12 +1252,17 @@
                     contentTextarea.focus();
 
                     return;
+
                 }
 
 
-                /* ================= BUTTON ================= */
+                /* ===========================
+                   BUTTON
+                =========================== */
 
-                saveBtn.disabled = true;
+                saveBtn.disabled =
+                    true;
+
 
                 saveBtn.innerHTML =
                     '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
@@ -805,7 +1272,7 @@
 
                     const response =
                         await fetch(
-                            `http://localhost:5000/api/notes/${noteId}`,
+                            `${API_URL}/api/notes/${encodeURIComponent(noteId)}`,
                             {
                                 method: "PUT",
 
@@ -817,64 +1284,71 @@
                                         "application/json"
                                 },
 
-                                body: JSON.stringify({
-                                    title: updatedTitle,
-                                    content: updatedContent,
-                                    category: updatedCategory
-                                })
+                                body:
+                                    JSON.stringify({
+                                        title:
+                                            updatedTitle,
+
+                                        content:
+                                            updatedContent,
+
+                                        category:
+                                            updatedCategory
+                                    })
                             }
                         );
 
 
-                    /* ================= AUTH ERROR ================= */
+                    /* ===========================
+                       AUTH ERROR
+                    =========================== */
 
-                    if (response.status === 401) {
+                    if (
+                        response.status === 401
+                    ) {
 
-                        localStorage.removeItem(
-                            "token"
-                        );
-
-                        localStorage.removeItem(
-                            "user"
-                        );
-
-                        alert(
-                            "Session expired. Please login again."
-                        );
-
-                        window.location.href =
-                            "login.html";
+                        handleSessionExpired();
 
                         return;
+
                     }
 
+
+                    /* ===========================
+                       OTHER ERROR
+                    =========================== */
 
                     if (!response.ok) {
 
                         const errorData =
-                            await response.json()
+                            await response
+                                .json()
                                 .catch(
                                     () => ({})
                                 );
+
 
                         throw new Error(
                             errorData.message ||
                             "Failed to update note"
                         );
+
                     }
 
 
-                    /* ================= SUCCESS ================= */
+                    /* ===========================
+                       SUCCESS
+                    =========================== */
 
                     alert(
                         "Note updated successfully! ✅"
                     );
 
+
                     window.location.href =
                         "dashboard.html";
 
                 }
-
                 catch (error) {
 
                     console.error(
@@ -882,23 +1356,29 @@
                         error
                     );
 
+
                     alert(
                         error.message ||
                         "Failed to update note."
                     );
 
+
                     saveBtn.disabled =
                         false;
 
+
                     saveBtn.innerHTML =
                         '<i class="fa-solid fa-check"></i> Save Changes';
+
                 }
 
             }
         );
 
 
-        /* ================= BACK ================= */
+        /* ===========================
+           BACK BUTTON
+        =========================== */
 
         backBtn.addEventListener(
             "click",
@@ -911,7 +1391,9 @@
         );
 
 
-        /* ================= INITIALIZE ================= */
+        /* ===========================
+           INITIALIZE
+        =========================== */
 
         loadNote();
 

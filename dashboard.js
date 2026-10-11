@@ -1,85 +1,381 @@
-// ================= AUTHENTICATION =================
+// =====================================================
+// NOTE NEST - DASHBOARD JS
+// =====================================================
+
+
+// =====================================================
+// AUTHENTICATION
+// =====================================================
 
 const token = localStorage.getItem("token");
 
 if (!token) {
     window.location.href = "login.html";
+    throw new Error("Authentication token not found.");
 }
 
 
-// ================= USER INFO =================
+// =====================================================
+// USER INFO
+// =====================================================
 
-const user = JSON.parse(localStorage.getItem("user"));
+let user = null;
 
-const userNameElement =
-    document.getElementById("userName");
+try {
+    const savedUser = localStorage.getItem("user");
 
-if (user && userNameElement) {
+    if (savedUser) {
+        user = JSON.parse(savedUser);
+    }
+} catch (error) {
+    console.error("User data error:", error);
+}
+
+const userNameElement = document.getElementById("userName");
+
+if (userNameElement) {
     userNameElement.textContent =
-        user.name ||
-        user.username ||
+        user?.name ||
+        user?.username ||
         "User";
 }
 
 
-// ================= ELEMENTS =================
+// =====================================================
+// BACKEND API
+// =====================================================
 
-const notesContainer =
-    document.getElementById("notesContainer");
-
-const emptyMessage =
-    document.getElementById("emptyMessage");
-
-const searchInput =
-    document.getElementById("searchInput");
-
-const addNoteBtn =
-    document.getElementById("addNoteBtn");
-
-const profileNav =
-    document.getElementById("profileNav");
-
-const homeNav =
-    document.getElementById("homeNav");
-
-const notesNav =
-    document.getElementById("notesNav");
-
-const seeAllBtn =
-    document.getElementById("seeAllBtn");
-
-const categoryList =
-    document.getElementById("categoryList");
-
-const addCategoryBtn =
-    document.getElementById("addCategoryBtn");
+const API_URL = "https://notenest-s0gh.onrender.com";
 
 
-// ================= CATEGORY MODAL =================
+// =====================================================
+// ELEMENTS
+// =====================================================
 
-const categoryModal =
-    document.getElementById("categoryModal");
+const notesContainer = document.getElementById("notesContainer");
+const emptyMessage = document.getElementById("emptyMessage");
+const searchInput = document.getElementById("searchInput");
 
+const addNoteBtn = document.getElementById("addNoteBtn");
+
+const profileNav = document.getElementById("profileNav");
+const homeNav = document.getElementById("homeNav");
+const notesNav = document.getElementById("notesNav");
+
+const seeAllBtn = document.getElementById("seeAllBtn");
+
+const categoryList = document.getElementById("categoryList");
+const addCategoryBtn = document.getElementById("addCategoryBtn");
+
+
+// =====================================================
+// CATEGORY MODAL
+// =====================================================
+
+const categoryModal = document.getElementById("categoryModal");
 const closeCategoryModal =
     document.getElementById("closeCategoryModal");
-
 const cancelCategoryBtn =
     document.getElementById("cancelCategoryBtn");
-
 const saveCategoryBtn =
     document.getElementById("saveCategoryBtn");
-
 const categoryNameInput =
     document.getElementById("categoryNameInput");
 
 
-// ================= NOTES =================
+// =====================================================
+// NOTES
+// =====================================================
 
 let allNotes = [];
 
 
 // =====================================================
-// CUSTOM POPUP
+// DEFAULT CATEGORIES
+// =====================================================
+
+const defaultCategories = [
+    {
+        name: "Study",
+        icon: "📚"
+    },
+    {
+        name: "Ideas",
+        icon: "💡"
+    },
+    {
+        name: "Personal",
+        icon: "❤️"
+    }
+];
+
+
+// =====================================================
+// LOAD SAVED CATEGORIES
+// =====================================================
+
+let savedCategories = [];
+
+try {
+    const storedCategories =
+        localStorage.getItem("noteNestCategories");
+
+    savedCategories = storedCategories
+        ? JSON.parse(storedCategories)
+        : [];
+} catch (error) {
+    console.error("Category data error:", error);
+    savedCategories = [];
+}
+
+
+// Make sure categories are valid
+
+savedCategories = savedCategories.filter(function (category) {
+    return (
+        category &&
+        typeof category.name === "string" &&
+        category.name.trim() !== ""
+    );
+});
+
+
+// Add missing default categories
+
+defaultCategories.forEach(function (defaultCategory) {
+
+    const exists = savedCategories.some(function (category) {
+
+        return (
+            category.name.toLowerCase() ===
+            defaultCategory.name.toLowerCase()
+        );
+
+    });
+
+    if (!exists) {
+        savedCategories.push({
+            name: defaultCategory.name,
+            icon: defaultCategory.icon
+        });
+    }
+
+});
+
+
+// Save categories
+
+localStorage.setItem(
+    "noteNestCategories",
+    JSON.stringify(savedCategories)
+);
+
+
+// =====================================================
+// SESSION EXPIRED
+// =====================================================
+
+function handleSessionExpired() {
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    sessionStorage.setItem(
+        "authError",
+        "Session expired. Please login again."
+    );
+
+    window.location.href = "login.html";
+}
+
+
+// =====================================================
+// CUSTOM POPUP STYLES
+// =====================================================
+
+function addPopupStyles() {
+
+    if (document.getElementById("noteNestPopupStyles")) {
+        return;
+    }
+
+    const style = document.createElement("style");
+
+    style.id = "noteNestPopupStyles";
+
+    style.textContent = `
+        .nn-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 999999;
+        }
+
+        .nn-popup-box {
+            width: min(420px, 100%);
+            background: #ffffff;
+            border: 1px solid #dbeafe;
+            border-radius: 24px;
+            padding: 30px 26px 25px;
+            text-align: center;
+            position: relative;
+            box-shadow:
+                0 20px 60px rgba(37, 99, 235, 0.15);
+            animation: nnPopupShow 0.22s ease;
+        }
+
+        @keyframes nnPopupShow {
+            from {
+                opacity: 0;
+                transform: translateY(15px) scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .nn-popup-close {
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 50%;
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .nn-popup-close:hover {
+            background: #dbeafe;
+            transform: rotate(90deg);
+        }
+
+        .nn-popup-icon {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 25px;
+        }
+
+        .nn-popup-box h3 {
+            margin: 0 0 8px;
+            color: #1e293b;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .nn-popup-box p {
+            margin: 0 auto 20px;
+            max-width: 330px;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .nn-popup-input-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .nn-popup-input-wrapper input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px 15px;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            outline: none;
+            background: #f8fbff;
+            color: #1e293b;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nn-popup-input-wrapper input:focus {
+            border-color: #2563eb;
+            background: #ffffff;
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .nn-popup-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .nn-popup-buttons button {
+            flex: 1;
+            min-height: 44px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .nn-popup-cancel {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .nn-popup-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        .nn-popup-confirm {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow:
+                0 6px 16px rgba(37, 99, 235, 0.20);
+        }
+
+        .nn-popup-confirm:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 480px) {
+
+            .nn-popup-box {
+                padding: 27px 20px 22px;
+                border-radius: 20px;
+            }
+
+            .nn-popup-box h3 {
+                font-size: 18px;
+            }
+
+            .nn-popup-buttons button {
+                min-height: 42px;
+            }
+        }
+    `;
+
+    document.head.appendChild(style);
+}
+
+
+// =====================================================
+// CREATE POPUP
 // =====================================================
 
 function createCustomPopup() {
@@ -91,18 +387,11 @@ function createCustomPopup() {
         oldPopup.remove();
     }
 
-    const oldStyle =
-        document.getElementById("noteNestPopupStyles");
+    addPopupStyles();
 
-    if (oldStyle) {
-        oldStyle.remove();
-    }
+    const popup = document.createElement("div");
 
-    const popup =
-        document.createElement("div");
-
-    popup.id =
-        "noteNestCustomPopup";
+    popup.id = "noteNestCustomPopup";
 
     popup.innerHTML = `
         <div class="nn-popup-overlay">
@@ -167,316 +456,12 @@ function createCustomPopup() {
 
     document.body.appendChild(popup);
 
-
-    // ================= POPUP STYLES =================
-
-    const style =
-        document.createElement("style");
-
-    style.id =
-        "noteNestPopupStyles";
-
-    style.textContent = `
-
-        .nn-popup-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(31, 20, 27, 0.35);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            padding: 20px;
-
-            z-index: 999999;
-        }
-
-
-        .nn-popup-box {
-            width: min(420px, 100%);
-
-            background: #ffffff;
-
-            border: 1px solid #ffe0eb;
-
-            border-radius: 24px;
-
-            padding: 30px 26px 25px;
-
-            text-align: center;
-
-            position: relative;
-
-            box-shadow:
-                0 20px 60px rgba(255, 92, 154, 0.18);
-
-            animation:
-                nnPopupShow 0.22s ease;
-        }
-
-
-        @keyframes nnPopupShow {
-
-            from {
-                opacity: 0;
-                transform:
-                    translateY(15px)
-                    scale(0.96);
-            }
-
-            to {
-                opacity: 1;
-                transform:
-                    translateY(0)
-                    scale(1);
-            }
-
-        }
-
-
-        .nn-popup-close {
-            position: absolute;
-
-            top: 12px;
-            right: 15px;
-
-            width: 32px;
-            height: 32px;
-
-            border: none;
-
-            background: #fff3f7;
-
-            color: #ff5c9a;
-
-            border-radius: 50%;
-
-            font-size: 22px;
-
-            line-height: 1;
-
-            cursor: pointer;
-
-            transition: 0.2s;
-        }
-
-
-        .nn-popup-close:hover {
-            background: #ffe1eb;
-            transform: rotate(90deg);
-        }
-
-
-        .nn-popup-icon {
-
-            width: 58px;
-            height: 58px;
-
-            margin:
-                0 auto 16px;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 50%;
-
-            background: #fff0f5;
-
-            color: #ff5c9a;
-
-            font-size: 25px;
-        }
-
-
-        .nn-popup-box h3 {
-
-            margin:
-                0 0 8px;
-
-            color: #2f252a;
-
-            font-size: 20px;
-
-            font-weight: 700;
-        }
-
-
-        .nn-popup-box p {
-
-            margin:
-                0 auto 20px;
-
-            max-width: 330px;
-
-            color: #807279;
-
-            font-size: 14px;
-
-            line-height: 1.6;
-        }
-
-
-        .nn-popup-input-wrapper {
-            margin-bottom: 20px;
-        }
-
-
-        .nn-popup-input-wrapper input {
-
-            width: 100%;
-
-            box-sizing: border-box;
-
-            padding:
-                13px 15px;
-
-            border:
-                1px solid #ffd2e1;
-
-            border-radius: 12px;
-
-            outline: none;
-
-            background: #fff9fb;
-
-            color: #2f252a;
-
-            font-size: 14px;
-
-            transition: 0.2s;
-        }
-
-
-        .nn-popup-input-wrapper input:focus {
-
-            border-color: #ff6fa5;
-
-            background: #ffffff;
-
-            box-shadow:
-                0 0 0 3px
-                rgba(255, 111, 165, 0.12);
-        }
-
-
-        .nn-popup-buttons {
-
-            display: flex;
-
-            gap: 10px;
-
-            justify-content: center;
-        }
-
-
-        .nn-popup-buttons button {
-
-            flex: 1;
-
-            min-height: 44px;
-
-            border-radius: 12px;
-
-            border: none;
-
-            font-size: 14px;
-
-            font-weight: 600;
-
-            cursor: pointer;
-
-            transition: 0.2s;
-        }
-
-
-        .nn-popup-cancel {
-
-            background: #fff1f6;
-
-            color: #ff5c9a;
-        }
-
-
-        .nn-popup-cancel:hover {
-
-            background: #ffe3ed;
-        }
-
-
-        .nn-popup-confirm {
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #ff6fa5,
-                    #ff5c9a
-                );
-
-            color: #ffffff;
-
-            box-shadow:
-                0 6px 16px
-                rgba(255, 92, 154, 0.20);
-        }
-
-
-        .nn-popup-confirm:hover {
-
-            transform:
-                translateY(-1px);
-
-            box-shadow:
-                0 8px 20px
-                rgba(255, 92, 154, 0.28);
-        }
-
-
-        .nn-popup-confirm.danger {
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #ff6fa5,
-                    #ff4f91
-                );
-        }
-
-
-        @media (max-width: 480px) {
-
-            .nn-popup-box {
-
-                padding:
-                    27px 20px 22px;
-
-                border-radius: 20px;
-            }
-
-            .nn-popup-box h3 {
-                font-size: 18px;
-            }
-
-            .nn-popup-buttons button {
-                min-height: 42px;
-            }
-
-        }
-
-    `;
-
-    document.head.appendChild(style);
-
     return popup;
 }
 
 
 // =====================================================
-// CUSTOM CONFIRM POPUP
+// CONFIRM POPUP
 // =====================================================
 
 function showConfirmPopup(
@@ -486,64 +471,41 @@ function showConfirmPopup(
 
     return new Promise(function (resolve) {
 
-        const popup =
-            createCustomPopup();
+        const popup = createCustomPopup();
 
         const titleElement =
-            popup.querySelector(
-                "#nnPopupTitle"
-            );
+            popup.querySelector("#nnPopupTitle");
 
         const messageElement =
-            popup.querySelector(
-                "#nnPopupMessage"
-            );
+            popup.querySelector("#nnPopupMessage");
 
         const inputWrapper =
-            popup.querySelector(
-                "#nnPopupInputWrapper"
-            );
+            popup.querySelector("#nnPopupInputWrapper");
 
         const confirmButton =
-            popup.querySelector(
-                "#nnPopupConfirm"
-            );
+            popup.querySelector("#nnPopupConfirm");
 
         const cancelButton =
-            popup.querySelector(
-                "#nnPopupCancel"
-            );
+            popup.querySelector("#nnPopupCancel");
 
         const closeButton =
-            popup.querySelector(
-                "#nnPopupClose"
-            );
+            popup.querySelector("#nnPopupClose");
 
+        titleElement.textContent = title;
+        messageElement.textContent = message;
 
-        titleElement.textContent =
-            title;
+        inputWrapper.style.display = "none";
 
-        messageElement.textContent =
-            message;
-
-        inputWrapper.style.display =
-            "none";
-
-        confirmButton.textContent =
-            "Delete";
-
-        confirmButton.classList.add(
-            "danger"
-        );
-
+        confirmButton.textContent = "Delete";
 
         function closePopup(result) {
 
-            popup.remove();
+            if (popup.parentElement) {
+                popup.remove();
+            }
 
             resolve(result);
         }
-
 
         confirmButton.addEventListener(
             "click",
@@ -552,14 +514,12 @@ function showConfirmPopup(
             }
         );
 
-
         cancelButton.addEventListener(
             "click",
             function () {
                 closePopup(false);
             }
         );
-
 
         closeButton.addEventListener(
             "click",
@@ -568,32 +528,26 @@ function showConfirmPopup(
             }
         );
 
+        const overlay =
+            popup.querySelector(".nn-popup-overlay");
 
-        popup
-            .querySelector(
-                ".nn-popup-overlay"
-            )
-            .addEventListener(
-                "click",
-                function (event) {
+        overlay.addEventListener(
+            "click",
+            function (event) {
 
-                    if (
-                        event.target.classList.contains(
-                            "nn-popup-overlay"
-                        )
-                    ) {
-                        closePopup(false);
-                    }
-
+                if (event.target === overlay) {
+                    closePopup(false);
                 }
-            );
+
+            }
+        );
 
     });
 }
 
 
 // =====================================================
-// CUSTOM INPUT POPUP
+// INPUT POPUP
 // =====================================================
 
 function showInputPopup(
@@ -604,94 +558,62 @@ function showInputPopup(
 
     return new Promise(function (resolve) {
 
-        const popup =
-            createCustomPopup();
+        const popup = createCustomPopup();
 
         const titleElement =
-            popup.querySelector(
-                "#nnPopupTitle"
-            );
+            popup.querySelector("#nnPopupTitle");
 
         const messageElement =
-            popup.querySelector(
-                "#nnPopupMessage"
-            );
+            popup.querySelector("#nnPopupMessage");
 
         const inputWrapper =
-            popup.querySelector(
-                "#nnPopupInputWrapper"
-            );
+            popup.querySelector("#nnPopupInputWrapper");
 
         const input =
-            popup.querySelector(
-                "#nnPopupInput"
-            );
+            popup.querySelector("#nnPopupInput");
 
         const confirmButton =
-            popup.querySelector(
-                "#nnPopupConfirm"
-            );
+            popup.querySelector("#nnPopupConfirm");
 
         const cancelButton =
-            popup.querySelector(
-                "#nnPopupCancel"
-            );
+            popup.querySelector("#nnPopupCancel");
 
         const closeButton =
-            popup.querySelector(
-                "#nnPopupClose"
-            );
+            popup.querySelector("#nnPopupClose");
 
+        titleElement.textContent = title;
+        messageElement.textContent = message;
 
-        titleElement.textContent =
-            title;
+        inputWrapper.style.display = "block";
 
-        messageElement.textContent =
-            message;
+        input.value = defaultValue;
+        input.placeholder = "Enter category name";
 
-        inputWrapper.style.display =
-            "block";
-
-        input.value =
-            defaultValue;
-
-        input.placeholder =
-            "Enter category name";
-
-        confirmButton.textContent =
-            "Save";
-
-        confirmButton.classList.remove(
-            "danger"
-        );
-
+        confirmButton.textContent = "Save";
 
         function closePopup(result) {
 
-            popup.remove();
+            if (popup.parentElement) {
+                popup.remove();
+            }
 
             resolve(result);
         }
-
 
         confirmButton.addEventListener(
             "click",
             function () {
 
-                const value =
-                    input.value.trim();
+                const value = input.value.trim();
 
                 if (!value) {
-
                     input.focus();
-
                     return;
                 }
 
                 closePopup(value);
             }
         );
-
 
         cancelButton.addEventListener(
             "click",
@@ -700,14 +622,12 @@ function showInputPopup(
             }
         );
 
-
         closeButton.addEventListener(
             "click",
             function () {
                 closePopup(null);
             }
         );
-
 
         input.addEventListener(
             "keydown",
@@ -730,11 +650,9 @@ function showInputPopup(
             }
         );
 
-
         setTimeout(function () {
 
             input.focus();
-
             input.select();
 
         }, 100);
@@ -743,7 +661,9 @@ function showInputPopup(
 }
 
 
-// ================= NOTIFICATION =================
+// =====================================================
+// NOTIFICATION
+// =====================================================
 
 function showNotification(
     message,
@@ -751,27 +671,22 @@ function showNotification(
 ) {
 
     const oldNotification =
-        document.querySelector(
-            ".custom-notification"
-        );
+        document.querySelector(".custom-notification");
 
     if (oldNotification) {
         oldNotification.remove();
     }
 
-
     const notification =
         document.createElement("div");
 
     notification.className =
-        "custom-notification";
-
+        `custom-notification ${type}`;
 
     const icon =
         type === "success"
             ? "✓"
             : "✕";
-
 
     notification.innerHTML = `
         <div class="notification-icon">
@@ -790,26 +705,18 @@ function showNotification(
         </button>
     `;
 
-
-    document.body.appendChild(
-        notification
-    );
-
+    document.body.appendChild(notification);
 
     setTimeout(function () {
 
-        notification.classList.add(
-            "show"
-        );
+        notification.classList.add("show");
 
     }, 10);
-
 
     const closeButton =
         notification.querySelector(
             ".notification-close"
         );
-
 
     if (closeButton) {
 
@@ -817,15 +724,11 @@ function showNotification(
             "click",
             function () {
 
-                notification.classList.remove(
-                    "show"
-                );
+                notification.classList.remove("show");
 
                 setTimeout(function () {
 
-                    if (
-                        notification.parentElement
-                    ) {
+                    if (notification.parentElement) {
                         notification.remove();
                     }
 
@@ -836,107 +739,69 @@ function showNotification(
 
     }
 
-
     setTimeout(function () {
 
-        if (
-            notification &&
-            notification.parentElement
-        ) {
-
-            notification.classList.remove(
-                "show"
-            );
-
-
-            setTimeout(function () {
-
-                if (
-                    notification &&
-                    notification.parentElement
-                ) {
-                    notification.remove();
-                }
-
-            }, 300);
-
+        if (!notification.parentElement) {
+            return;
         }
+
+        notification.classList.remove("show");
+
+        setTimeout(function () {
+
+            if (notification.parentElement) {
+                notification.remove();
+            }
+
+        }, 300);
 
     }, 3000);
 }
 
 
-// ================= LOAD NOTES =================
+// =====================================================
+// LOAD NOTES
+// =====================================================
 
 async function loadNotes() {
 
     try {
 
-        const response =
-            await fetch(
-                "http://localhost:5000/api/notes",
-                {
-                    method: "GET",
-
-                    headers: {
-                        "Authorization":
-                            `Bearer ${token}`,
-
-                        "Content-Type":
-                            "application/json"
-                    }
+        const response = await fetch(
+            `${API_URL}/api/notes`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
                 }
-            );
-
+            }
+        );
 
         if (response.status === 401) {
-
-            localStorage.removeItem(
-                "token"
-            );
-
-            localStorage.removeItem(
-                "user"
-            );
-
-            showNotification(
-                "Session expired. Please login again.",
-                "error"
-            );
-
-            setTimeout(function () {
-
-                window.location.href =
-                    "login.html";
-
-            }, 1500);
-
+            handleSessionExpired();
             return;
         }
 
-
         if (!response.ok) {
-
             throw new Error(
-                "Failed to load notes"
+                "Failed to load notes."
             );
         }
 
+        const data = await response.json();
 
-        const data =
-            await response.json();
-
-
-        allNotes =
-            Array.isArray(data)
-                ? data
-                : data.notes || [];
-
+        if (Array.isArray(data)) {
+            allNotes = data;
+        } else {
+            allNotes = Array.isArray(data.notes)
+                ? data.notes
+                : [];
+        }
 
         displayNotes(allNotes);
 
-    }
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Error loading notes:",
@@ -948,16 +813,20 @@ async function loadNotes() {
         }
 
         if (emptyMessage) {
-            emptyMessage.style.display =
-                "block";
+            emptyMessage.style.display = "block";
         }
 
+        showNotification(
+            "Unable to load notes.",
+            "error"
+        );
     }
-
 }
 
 
-// ================= DISPLAY NOTES =================
+// =====================================================
+// DISPLAY NOTES
+// =====================================================
 
 function displayNotes(notes) {
 
@@ -965,90 +834,74 @@ function displayNotes(notes) {
         return;
     }
 
-
     notesContainer.innerHTML = "";
 
-
-    if (!notes || notes.length === 0) {
+    if (!Array.isArray(notes) || notes.length === 0) {
 
         if (emptyMessage) {
-
-            emptyMessage.style.display =
-                "block";
+            emptyMessage.style.display = "block";
         }
 
         return;
     }
 
-
     if (emptyMessage) {
-
-        emptyMessage.style.display =
-            "none";
+        emptyMessage.style.display = "none";
     }
-
 
     notes.forEach(function (note) {
 
-        const card =
-            document.createElement("div");
+        const card = document.createElement("div");
 
-        card.className =
-            "note-card";
-
-        card.style.position =
-            "relative";
-
-        card.style.zIndex =
-            "1";
-
+        card.className = "note-card";
+        card.style.position = "relative";
+        card.style.zIndex = "1";
 
         const noteId =
             note._id ||
             note.id;
 
-
         card.dataset.id =
             noteId || "";
 
-
         card.dataset.category =
-            note.category ||
-            "Study";
+            note.category || "Study";
 
 
-        // ================= ICON =================
+        // =================================================
+        // ICON
+        // =================================================
 
-        const icon =
-            document.createElement("div");
+        const icon = document.createElement("div");
 
-        icon.className =
-            "note-icon";
+        icon.className = "note-icon";
 
         icon.innerHTML =
             '<i class="fa-regular fa-note-sticky"></i>';
 
 
-        // ================= INFO =================
+        // =================================================
+        // INFO
+        // =================================================
 
-        const info =
-            document.createElement("div");
+        const info = document.createElement("div");
 
-        info.className =
-            "note-info";
+        info.className = "note-info";
 
 
-        // ================= TITLE =================
+        // =================================================
+        // TITLE
+        // =================================================
 
-        const title =
-            document.createElement("h3");
+        const title = document.createElement("h3");
 
         title.textContent =
-            note.title ||
-            "Untitled Note";
+            note.title || "Untitled Note";
 
 
-        // ================= DESCRIPTION =================
+        // =================================================
+        // DESCRIPTION
+        // =================================================
 
         const description =
             document.createElement("p");
@@ -1060,91 +913,80 @@ function displayNotes(notes) {
 
 
         info.appendChild(title);
-
         info.appendChild(description);
 
 
-        // ================= MORE BUTTON =================
+        // =================================================
+        // MORE BUTTON
+        // =================================================
 
         const moreButton =
             document.createElement("button");
 
-        moreButton.type =
-            "button";
-
-        moreButton.className =
-            "more-btn";
+        moreButton.type = "button";
+        moreButton.className = "more-btn";
 
         moreButton.innerHTML =
             '<i class="fa-solid fa-ellipsis-vertical"></i>';
 
 
-        // ================= NOTE MENU =================
+        // =================================================
+        // NOTE MENU
+        // =================================================
 
         const menu =
             document.createElement("div");
 
-        menu.className =
-            "note-menu";
+        menu.className = "note-menu";
 
 
-        // ================= EDIT BUTTON =================
+        // =================================================
+        // EDIT BUTTON
+        // =================================================
 
         const editButton =
             document.createElement("button");
 
-        editButton.type =
-            "button";
-
-        editButton.className =
-            "edit-note-btn";
-
-        editButton.textContent =
-            "✏️ Edit";
+        editButton.type = "button";
+        editButton.className = "edit-note-btn";
+        editButton.textContent = "✏️ Edit";
 
 
-        // ================= DELETE BUTTON =================
+        // =================================================
+        // DELETE BUTTON
+        // =================================================
 
         const deleteButton =
             document.createElement("button");
 
-        deleteButton.type =
-            "button";
-
-        deleteButton.className =
-            "delete-note-btn";
-
-        deleteButton.textContent =
-            "🗑️ Delete";
+        deleteButton.type = "button";
+        deleteButton.className = "delete-note-btn";
+        deleteButton.textContent = "🗑️ Delete";
 
 
-        // ================= BUILD MENU =================
+        // =================================================
+        // BUILD MENU
+        // =================================================
 
-        menu.appendChild(
-            editButton
-        );
-
-        menu.appendChild(
-            deleteButton
-        );
+        menu.appendChild(editButton);
+        menu.appendChild(deleteButton);
 
 
-        // ================= BUILD CARD =================
+        // =================================================
+        // BUILD CARD
+        // =================================================
 
         card.appendChild(icon);
-
         card.appendChild(info);
-
         card.appendChild(moreButton);
-
         card.appendChild(menu);
 
         notesContainer.appendChild(card);
 
 
-        // =====================================================
+        // =================================================
         // OPEN NOTE
-        // =====================================================
+        // =================================================
 
         card.addEventListener(
             "click",
@@ -1160,7 +1002,6 @@ function displayNotes(notes) {
                     return;
                 }
 
-
                 window.location.href =
                     `view-note.html?id=${encodeURIComponent(noteId)}`;
 
@@ -1168,69 +1009,57 @@ function displayNotes(notes) {
         );
 
 
-        // =====================================================
+        // =================================================
         // MORE MENU
-        // =====================================================
+        // =================================================
 
         moreButton.addEventListener(
             "click",
             function (event) {
 
                 event.preventDefault();
-
                 event.stopPropagation();
 
-
-                const menuIsOpen =
-                    menu.style.display ===
-                    "block";
-
+                const isOpen =
+                    menu.style.display === "block";
 
                 document
                     .querySelectorAll(".note-menu")
                     .forEach(function (otherMenu) {
 
-                        otherMenu.style.display =
-                            "none";
+                        otherMenu.style.display = "none";
 
                     });
-
 
                 document
                     .querySelectorAll(".note-card")
                     .forEach(function (otherCard) {
 
-                        otherCard.style.zIndex =
-                            "1";
+                        otherCard.style.zIndex = "1";
 
                     });
 
+                if (!isOpen) {
 
-                if (!menuIsOpen) {
+                    menu.style.display = "block";
+                    card.style.zIndex = "1000";
 
-                    menu.style.display =
-                        "block";
-
-                    card.style.zIndex =
-                        "1000";
                 }
 
             }
         );
 
 
-        // =====================================================
+        // =================================================
         // EDIT NOTE
-        // =====================================================
+        // =================================================
 
         editButton.addEventListener(
             "click",
             function (event) {
 
                 event.preventDefault();
-
                 event.stopPropagation();
-
 
                 if (!noteId) {
 
@@ -1242,23 +1071,8 @@ function displayNotes(notes) {
                     return;
                 }
 
-
-                menu.style.display =
-                    "none";
-
-                card.style.zIndex =
-                    "1";
-
-
-                /*
-                 * IMPORTANT:
-                 * Edit mode URL.
-                 *
-                 * create-note.html = same form/page
-                 * id = which note to edit
-                 * edit=true = tells create-note.js
-                 *            to show "Edit Note"
-                 */
+                menu.style.display = "none";
+                card.style.zIndex = "1";
 
                 window.location.href =
                     `create-note.html?id=${encodeURIComponent(noteId)}&edit=true`;
@@ -1267,18 +1081,16 @@ function displayNotes(notes) {
         );
 
 
-        // =====================================================
+        // =================================================
         // DELETE NOTE
-        // =====================================================
+        // =================================================
 
         deleteButton.addEventListener(
             "click",
             async function (event) {
 
                 event.preventDefault();
-
                 event.stopPropagation();
-
 
                 if (!noteId) {
 
@@ -1290,70 +1102,36 @@ function displayNotes(notes) {
                     return;
                 }
 
-
                 const confirmed =
                     await showConfirmPopup(
                         "Are you sure you want to delete this note?",
                         "Delete Note?"
                     );
 
-
                 if (!confirmed) {
                     return;
                 }
 
-
                 try {
 
-                    deleteButton.disabled =
-                        true;
+                    deleteButton.disabled = true;
+                    deleteButton.textContent = "Deleting...";
 
-                    deleteButton.textContent =
-                        "Deleting...";
-
-
-                    const response =
-                        await fetch(
-                            `http://localhost:5000/api/notes/${encodeURIComponent(noteId)}`,
-                            {
-                                method: "DELETE",
-
-                                headers: {
-                                    "Authorization":
-                                        `Bearer ${token}`,
-
-                                    "Content-Type":
-                                        "application/json"
-                                }
+                    const response = await fetch(
+                        `${API_URL}/api/notes/${encodeURIComponent(noteId)}`,
+                        {
+                            method: "DELETE",
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json"
                             }
-                        );
-
+                        }
+                    );
 
                     if (response.status === 401) {
-
-                        localStorage.removeItem(
-                            "token"
-                        );
-
-                        localStorage.removeItem(
-                            "user"
-                        );
-
-                        showNotification(
-                            "Session expired. Please login again.",
-                            "error"
-                        );
-
-                        setTimeout(function () {
-
-                            window.location.href =
-                                "login.html";
-
-                        }, 1500);
-
+                        handleSessionExpired();
                         return;
                     }
-
 
                     if (!response.ok) {
 
@@ -1366,55 +1144,44 @@ function displayNotes(notes) {
                                 await response.json();
 
                             if (errorData.message) {
-
                                 errorMessage =
                                     errorData.message;
                             }
 
-                        }
-                        catch (e) {
-                            // Ignore JSON error
+                        } catch (error) {
+                            // Ignore JSON parsing error
                         }
 
-
-                        throw new Error(
-                            errorMessage
-                        );
+                        throw new Error(errorMessage);
                     }
 
+                    allNotes = allNotes.filter(
+                        function (item) {
 
-                    allNotes =
-                        allNotes.filter(
-                            function (item) {
+                            const itemId =
+                                item._id ||
+                                item.id;
 
-                                const itemId =
-                                    item._id ||
-                                    item.id;
+                            return (
+                                String(itemId) !==
+                                String(noteId)
+                            );
 
-                                return String(itemId) !==
-                                    String(noteId);
-
-                            }
-                        );
-
-
-                    displayNotes(
-                        allNotes
+                        }
                     );
 
+                    displayNotes(allNotes);
 
                     showNotification(
                         "Note deleted successfully! 🗑️"
                     );
 
-                }
-                catch (error) {
+                } catch (error) {
 
                     console.error(
                         "Delete error:",
                         error
                     );
-
 
                     showNotification(
                         error.message ||
@@ -1422,19 +1189,14 @@ function displayNotes(notes) {
                         "error"
                     );
 
-
-                    deleteButton.disabled =
-                        false;
-
-                    deleteButton.textContent =
-                        "🗑️ Delete";
+                    deleteButton.disabled = false;
+                    deleteButton.textContent = "🗑️ Delete";
                 }
 
             }
         );
 
     });
-
 }
 
 
@@ -1453,32 +1215,26 @@ if (searchInput) {
                     .toLowerCase()
                     .trim();
 
-
             const filteredNotes =
                 allNotes.filter(
                     function (note) {
 
                         const title =
-                            (
-                                note.title ||
-                                ""
+                            String(
+                                note.title || ""
                             ).toLowerCase();
 
-
                         const content =
-                            (
+                            String(
                                 note.content ||
                                 note.description ||
                                 ""
                             ).toLowerCase();
 
-
                         const category =
-                            (
-                                note.category ||
-                                ""
+                            String(
+                                note.category || ""
                             ).toLowerCase();
-
 
                         return (
                             title.includes(searchText) ||
@@ -1489,91 +1245,12 @@ if (searchInput) {
                     }
                 );
 
-
-            displayNotes(
-                filteredNotes
-            );
+            displayNotes(filteredNotes);
 
         }
     );
 
 }
-
-
-// =====================================================
-// DEFAULT CATEGORIES
-// =====================================================
-
-const defaultCategories = [
-
-    {
-        name: "Study",
-        icon: "📚"
-    },
-
-    {
-        name: "Ideas",
-        icon: "💡"
-    },
-
-    {
-        name: "Personal",
-        icon: "❤️"
-    }
-
-];
-
-
-// =====================================================
-// SAVED CATEGORIES
-// =====================================================
-
-let savedCategories =
-    JSON.parse(
-        localStorage.getItem(
-            "noteNestCategories"
-        )
-    ) || [];
-
-
-// =====================================================
-// ADD DEFAULT CATEGORIES
-// =====================================================
-
-defaultCategories.forEach(
-    function (defaultCategory) {
-
-        const exists =
-            savedCategories.some(
-                function (category) {
-
-                    return (
-                        category.name.toLowerCase() ===
-                        defaultCategory.name.toLowerCase()
-                    );
-
-                }
-            );
-
-
-        if (!exists) {
-
-            savedCategories.push(
-                defaultCategory
-            );
-
-        }
-
-    }
-);
-
-
-localStorage.setItem(
-    "noteNestCategories",
-    JSON.stringify(
-        savedCategories
-    )
-);
 
 
 // =====================================================
@@ -1587,26 +1264,20 @@ function positionCategoryMenu(
 
     menu.classList.add("show");
 
-
     const buttonRect =
         moreButton.getBoundingClientRect();
-
 
     const menuHeight =
         menu.offsetHeight;
 
-
     const menuWidth =
         menu.offsetWidth;
-
 
     let top =
         buttonRect.bottom + 5;
 
-
     let left =
         buttonRect.left;
-
 
     if (
         left + menuWidth >
@@ -1619,11 +1290,9 @@ function positionCategoryMenu(
             10;
     }
 
-
     if (left < 10) {
         left = 10;
     }
-
 
     if (
         top + menuHeight >
@@ -1636,12 +1305,8 @@ function positionCategoryMenu(
             5;
     }
 
-
-    menu.style.top =
-        `${top}px`;
-
-    menu.style.left =
-        `${left}px`;
+    menu.style.top = `${top}px`;
+    menu.style.left = `${left}px`;
 }
 
 
@@ -1655,40 +1320,28 @@ function displayCategories() {
         return;
     }
 
-
     document
         .querySelectorAll(".category-menu")
         .forEach(function (menu) {
             menu.remove();
         });
 
-
     categoryList.innerHTML = "";
 
 
     // =================================================
-    // ALL
+    // ALL CATEGORY
     // =================================================
 
     const allButton =
         document.createElement("button");
 
-    allButton.type =
-        "button";
+    allButton.type = "button";
+    allButton.className = "category active";
+    allButton.dataset.category = "All";
+    allButton.textContent = "All";
 
-    allButton.className =
-        "category active";
-
-    allButton.dataset.category =
-        "All";
-
-    allButton.textContent =
-        "All";
-
-
-    categoryList.appendChild(
-        allButton
-    );
+    categoryList.appendChild(allButton);
 
 
     // =================================================
@@ -1710,35 +1363,27 @@ function displayCategories() {
             const button =
                 document.createElement("button");
 
-            button.type =
-                "button";
-
-            button.className =
-                "category";
-
-            button.dataset.category =
-                category.name;
+            button.type = "button";
+            button.className = "category";
+            button.dataset.category = category.name;
 
             button.textContent =
-                `${category.icon} ${category.name}`;
+                `${category.icon || "📁"} ${category.name}`;
 
 
-            // 3 DOT
+            // MORE BUTTON
 
             const moreButton =
                 document.createElement("button");
 
-            moreButton.type =
-                "button";
-
+            moreButton.type = "button";
             moreButton.className =
                 "category-more-btn";
 
-            moreButton.textContent =
-                "⋮";
+            moreButton.textContent = "⋮";
 
 
-            // CATEGORY MENU
+            // MENU
 
             const menu =
                 document.createElement("div");
@@ -1752,11 +1397,8 @@ function displayCategories() {
             const editButton =
                 document.createElement("button");
 
-            editButton.type =
-                "button";
-
-            editButton.textContent =
-                "✏️ Edit";
+            editButton.type = "button";
+            editButton.textContent = "✏️ Edit";
 
 
             // DELETE
@@ -1764,9 +1406,7 @@ function displayCategories() {
             const deleteButton =
                 document.createElement("button");
 
-            deleteButton.type =
-                "button";
-
+            deleteButton.type = "button";
             deleteButton.className =
                 "delete-category-btn";
 
@@ -1774,90 +1414,62 @@ function displayCategories() {
                 "🗑️ Delete";
 
 
-            menu.appendChild(
-                editButton
-            );
+            menu.appendChild(editButton);
+            menu.appendChild(deleteButton);
 
-            menu.appendChild(
-                deleteButton
-            );
+            wrapper.appendChild(button);
+            wrapper.appendChild(moreButton);
 
-
-            wrapper.appendChild(
-                button
-            );
-
-            wrapper.appendChild(
-                moreButton
-            );
-
-
-            document.body.appendChild(
-                menu
-            );
-
-            categoryList.appendChild(
-                wrapper
-            );
+            document.body.appendChild(menu);
+            categoryList.appendChild(wrapper);
 
 
             // =================================================
-            // CATEGORY SELECT
+            // SELECT CATEGORY
             // =================================================
 
             button.addEventListener(
                 "click",
                 function (event) {
 
+                    event.preventDefault();
                     event.stopPropagation();
-
 
                     document
                         .querySelectorAll(".category")
-                        .forEach(
-                            function (item) {
+                        .forEach(function (item) {
 
-                                item.classList.remove(
-                                    "active"
-                                );
+                            item.classList.remove("active");
 
-                            }
-                        );
+                        });
 
-
-                    button.classList.add(
-                        "active"
-                    );
-
+                    button.classList.add("active");
 
                     const selectedCategory =
                         category.name.toLowerCase();
-
 
                     const filteredNotes =
                         allNotes.filter(
                             function (note) {
 
                                 return (
-                                    note.category ||
-                                    ""
-                                ).toLowerCase() ===
-                                selectedCategory;
+                                    String(
+                                        note.category || ""
+                                    ).toLowerCase() ===
+                                    selectedCategory
+                                );
 
                             }
                         );
 
-
-                    displayNotes(
-                        filteredNotes
-                    );
+                    displayNotes(filteredNotes);
 
                 }
             );
 
 
             // =================================================
-            // CATEGORY 3 DOT
+            // CATEGORY MORE
             // =================================================
 
             moreButton.addEventListener(
@@ -1865,41 +1477,23 @@ function displayCategories() {
                 function (event) {
 
                     event.preventDefault();
-
                     event.stopPropagation();
-
 
                     document
                         .querySelectorAll(".category-menu")
-                        .forEach(
-                            function (otherMenu) {
+                        .forEach(function (otherMenu) {
 
-                                if (
-                                    otherMenu !==
-                                    menu
-                                ) {
-
-                                    otherMenu.classList.remove(
-                                        "show"
-                                    );
-                                }
-
+                            if (otherMenu !== menu) {
+                                otherMenu.classList.remove("show");
                             }
-                        );
 
+                        });
 
-                    if (
-                        menu.classList.contains(
-                            "show"
-                        )
-                    ) {
+                    if (menu.classList.contains("show")) {
 
-                        menu.classList.remove(
-                            "show"
-                        );
+                        menu.classList.remove("show");
 
-                    }
-                    else {
+                    } else {
 
                         positionCategoryMenu(
                             menu,
@@ -1921,14 +1515,9 @@ function displayCategories() {
                 async function (event) {
 
                     event.preventDefault();
-
                     event.stopPropagation();
 
-
-                    menu.classList.remove(
-                        "show"
-                    );
-
+                    menu.classList.remove("show");
 
                     const newName =
                         await showInputPopup(
@@ -1937,20 +1526,16 @@ function displayCategories() {
                             "Edit Category"
                         );
 
-
                     if (newName === null) {
                         return;
                     }
 
-
                     const cleanName =
                         newName.trim();
-
 
                     if (!cleanName) {
                         return;
                     }
-
 
                     const duplicate =
                         savedCategories.some(
@@ -1965,7 +1550,6 @@ function displayCategories() {
                             }
                         );
 
-
                     if (duplicate) {
 
                         showNotification(
@@ -1976,23 +1560,25 @@ function displayCategories() {
                         return;
                     }
 
-
                     const oldName =
                         category.name;
-
 
                     category.name =
                         cleanName;
 
 
+                    // Update note categories locally
+
                     allNotes.forEach(
                         function (note) {
 
+                            const noteCategory =
+                                String(
+                                    note.category || ""
+                                ).toLowerCase();
+
                             if (
-                                (
-                                    note.category ||
-                                    ""
-                                ).toLowerCase() ===
+                                noteCategory ===
                                 oldName.toLowerCase()
                             ) {
 
@@ -2006,18 +1592,11 @@ function displayCategories() {
 
                     localStorage.setItem(
                         "noteNestCategories",
-                        JSON.stringify(
-                            savedCategories
-                        )
+                        JSON.stringify(savedCategories)
                     );
-
 
                     displayCategories();
-
-                    displayNotes(
-                        allNotes
-                    );
-
+                    displayNotes(allNotes);
 
                     showNotification(
                         "Category updated successfully! ✅"
@@ -2036,14 +1615,9 @@ function displayCategories() {
                 async function (event) {
 
                     event.preventDefault();
-
                     event.stopPropagation();
 
-
-                    menu.classList.remove(
-                        "show"
-                    );
-
+                    menu.classList.remove("show");
 
                     const confirmed =
                         await showConfirmPopup(
@@ -2051,37 +1625,26 @@ function displayCategories() {
                             "Delete Category?"
                         );
 
-
                     if (!confirmed) {
                         return;
                     }
-
 
                     savedCategories =
                         savedCategories.filter(
                             function (item) {
 
-                                return item !==
-                                    category;
+                                return item !== category;
 
                             }
                         );
 
-
                     localStorage.setItem(
                         "noteNestCategories",
-                        JSON.stringify(
-                            savedCategories
-                        )
+                        JSON.stringify(savedCategories)
                     );
-
 
                     displayCategories();
-
-                    displayNotes(
-                        allNotes
-                    );
-
+                    displayNotes(allNotes);
 
                     showNotification(
                         "Category deleted successfully! 🗑️"
@@ -2095,37 +1658,27 @@ function displayCategories() {
 
 
     // =================================================
-    // ALL CATEGORY
+    // ALL CATEGORY CLICK
     // =================================================
 
     allButton.addEventListener(
         "click",
         function (event) {
 
+            event.preventDefault();
             event.stopPropagation();
-
 
             document
                 .querySelectorAll(".category")
-                .forEach(
-                    function (item) {
+                .forEach(function (item) {
 
-                        item.classList.remove(
-                            "active"
-                        );
+                    item.classList.remove("active");
 
-                    }
-                );
+                });
 
+            allButton.classList.add("active");
 
-            allButton.classList.add(
-                "active"
-            );
-
-
-            displayNotes(
-                allNotes
-            );
+            displayNotes(allNotes);
 
         }
     );
@@ -2134,7 +1687,7 @@ function displayCategories() {
 
 
 // =====================================================
-// ADD CATEGORY MODAL
+// OPEN CATEGORY MODAL
 // =====================================================
 
 function openCategoryModal() {
@@ -2143,35 +1696,19 @@ function openCategoryModal() {
         return;
     }
 
-
     if (categoryNameInput) {
-
         categoryNameInput.value = "";
-
-        categoryNameInput.removeAttribute(
-            "value"
-        );
     }
 
+    categoryModal.classList.add("show");
 
-    categoryModal.classList.add(
-        "show"
-    );
+    setTimeout(function () {
 
+        if (categoryNameInput) {
+            categoryNameInput.focus();
+        }
 
-    setTimeout(
-        function () {
-
-            if (categoryNameInput) {
-
-                categoryNameInput.focus();
-
-                categoryNameInput.value = "";
-            }
-
-        },
-        100
-    );
+    }, 100);
 }
 
 
@@ -2185,22 +1722,16 @@ function closeCategoryModalFunc() {
         return;
     }
 
-
-    categoryModal.classList.remove(
-        "show"
-    );
-
+    categoryModal.classList.remove("show");
 
     if (categoryNameInput) {
-
         categoryNameInput.value = "";
     }
-
 }
 
 
 // =====================================================
-// ADD CATEGORY BUTTON
+// ADD CATEGORY
 // =====================================================
 
 if (addCategoryBtn) {
@@ -2210,7 +1741,6 @@ if (addCategoryBtn) {
         function (event) {
 
             event.preventDefault();
-
             event.stopPropagation();
 
             openCategoryModal();
@@ -2222,7 +1752,7 @@ if (addCategoryBtn) {
 
 
 // =====================================================
-// CLOSE MODAL BUTTON
+// CLOSE CATEGORY MODAL
 // =====================================================
 
 if (closeCategoryModal) {
@@ -2232,7 +1762,6 @@ if (closeCategoryModal) {
         function (event) {
 
             event.preventDefault();
-
             event.stopPropagation();
 
             closeCategoryModalFunc();
@@ -2244,7 +1773,7 @@ if (closeCategoryModal) {
 
 
 // =====================================================
-// CANCEL MODAL
+// CANCEL CATEGORY
 // =====================================================
 
 if (cancelCategoryBtn) {
@@ -2254,7 +1783,6 @@ if (cancelCategoryBtn) {
         function (event) {
 
             event.preventDefault();
-
             event.stopPropagation();
 
             closeCategoryModalFunc();
@@ -2276,18 +1804,14 @@ if (saveCategoryBtn) {
         function (event) {
 
             event.preventDefault();
-
             event.stopPropagation();
-
 
             if (!categoryNameInput) {
                 return;
             }
 
-
             const categoryName =
                 categoryNameInput.value.trim();
-
 
             if (!categoryName) {
 
@@ -2301,7 +1825,6 @@ if (saveCategoryBtn) {
                 return;
             }
 
-
             const alreadyExists =
                 savedCategories.some(
                     function (category) {
@@ -2313,7 +1836,6 @@ if (saveCategoryBtn) {
 
                     }
                 );
-
 
             if (alreadyExists) {
 
@@ -2327,35 +1849,21 @@ if (saveCategoryBtn) {
                 return;
             }
 
-
             const newCategory = {
-
-                name:
-                    categoryName,
-
-                icon:
-                    "📁"
-
+                name: categoryName,
+                icon: "📁"
             };
 
-
-            savedCategories.push(
-                newCategory
-            );
-
+            savedCategories.push(newCategory);
 
             localStorage.setItem(
                 "noteNestCategories",
-                JSON.stringify(
-                    savedCategories
-                )
+                JSON.stringify(savedCategories)
             );
-
 
             displayCategories();
 
             closeCategoryModalFunc();
-
 
             showNotification(
                 `"${categoryName}" category added successfully! ✅`
@@ -2368,7 +1876,7 @@ if (saveCategoryBtn) {
 
 
 // =====================================================
-// CLOSE MODAL OUTSIDE CLICK
+// CLOSE MODAL ON OUTSIDE CLICK
 // =====================================================
 
 if (categoryModal) {
@@ -2377,13 +1885,8 @@ if (categoryModal) {
         "click",
         function (event) {
 
-            if (
-                event.target ===
-                categoryModal
-            ) {
-
+            if (event.target === categoryModal) {
                 closeCategoryModalFunc();
-
             }
 
         }
@@ -2393,7 +1896,7 @@ if (categoryModal) {
 
 
 // =====================================================
-// ENTER KEY FOR CATEGORY
+// ENTER KEY - CATEGORY
 // =====================================================
 
 if (categoryNameInput) {
@@ -2407,9 +1910,7 @@ if (categoryNameInput) {
                 event.preventDefault();
 
                 if (saveCategoryBtn) {
-
                     saveCategoryBtn.click();
-
                 }
 
             }
@@ -2421,54 +1922,36 @@ if (categoryNameInput) {
 
 
 // =====================================================
-// CLOSE MENUS
+// CLOSE ALL MENUS
 // =====================================================
 
 document.addEventListener(
     "click",
     function () {
 
-        // Close category menus
-
         document
             .querySelectorAll(".category-menu")
-            .forEach(
-                function (menu) {
+            .forEach(function (menu) {
 
-                    menu.classList.remove(
-                        "show"
-                    );
+                menu.classList.remove("show");
 
-                }
-            );
-
-
-        // Close note menus
+            });
 
         document
             .querySelectorAll(".note-menu")
-            .forEach(
-                function (menu) {
+            .forEach(function (menu) {
 
-                    menu.style.display =
-                        "none";
+                menu.style.display = "none";
 
-                }
-            );
-
-
-        // Reset note card layers
+            });
 
         document
             .querySelectorAll(".note-card")
-            .forEach(
-                function (card) {
+            .forEach(function (card) {
 
-                    card.style.zIndex =
-                        "1";
+                card.style.zIndex = "1";
 
-                }
-            );
+            });
 
     }
 );
@@ -2485,11 +1968,7 @@ if (addNoteBtn) {
         function (event) {
 
             event.preventDefault();
-
             event.stopPropagation();
-
-
-            // NEW NOTE → normal Create Note page
 
             window.location.href =
                 "create-note.html";
@@ -2501,7 +1980,7 @@ if (addNoteBtn) {
 
 
 // =====================================================
-// PROFILE NAV
+// PROFILE NAVIGATION
 // =====================================================
 
 if (profileNav) {
@@ -2522,7 +2001,7 @@ if (profileNav) {
 
 
 // =====================================================
-// HOME NAV
+// HOME NAVIGATION
 // =====================================================
 
 if (homeNav) {
@@ -2543,7 +2022,7 @@ if (homeNav) {
 
 
 // =====================================================
-// NOTES NAV
+// NOTES NAVIGATION
 // =====================================================
 
 if (notesNav) {
@@ -2589,6 +2068,4 @@ if (seeAllBtn) {
 // =====================================================
 
 displayCategories();
-
 loadNotes();
-
